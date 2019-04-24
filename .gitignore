@@ -1,0 +1,15 @@
+/[Ll]ibrary/
+/[Oo]bj/
+/[Pp]ackages/
+/[Tt]emp/
+/[Uu]nityPackageManager/
+
+.DS_Store
+.vs
+.vscode
+
+*.csproj
+*.sln
+*.suo
+*.user
+*.userprefs
