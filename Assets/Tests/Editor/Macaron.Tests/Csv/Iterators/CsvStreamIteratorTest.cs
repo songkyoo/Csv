@@ -84,13 +84,13 @@ namespace Macaron.Tests.Csv.Iterators
             var stream = GetStream(str);
             return new CsvStreamIterator(
                 stream,
-                false,
                 fieldSeparator,
                 quote,
                 escape,
                 recordTerminator,
                 trimMode,
-                nullValue);
+                nullValue,
+                false);
         }
 
         private Stream GetStream(string str)

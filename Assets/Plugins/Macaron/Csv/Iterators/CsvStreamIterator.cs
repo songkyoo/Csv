@@ -23,13 +23,13 @@ namespace Macaron.Csv.Iterators
         /// <see cref="Stream"/> 개체를 사용하여 <see cref="CsvStreamIterator"/> 개체를 생성한다.
         /// </summary>
         /// <param name="stream">CSV 데이터를 가진 <see cref="Stream"/> 개체. BOM이 없다면 UTF8 형식이라고 가정한다.</param>
-        /// <param name="leaveOpen"><c>false</c>라면 <see cref="Dispose"/> 호출 시 입력 받은 <see cref="Stream"/> 개체의 <see cref="Stream.Dispose"/>를 호출한다.</param>
         /// <param name="fieldSeparator">필드 구분자. <c>'\r'</c>, <c>'\n'</c>은 허용되지 않는다.</param>
         /// <param name="quote">인용부호. <paramref name="fieldSeparator"/>, <c>'\r'</c>, <c>'\n'</c>은 허용되지 않는다.</param>
         /// <param name="escape">이스케이프. <paramref name="fieldSeparator"/>, <c>'\r'</c>, <c>'\n'</c>은 허용되지 않는다.</param>
         /// <param name="recordTerminator">레코드 구분자. <c>null</c>인 경우 첫 번째 레코드의 구분자를 사용한다.</param>
         /// <param name="trimMode">인용부호로 둘러 쌓이지 않은 필드의 좌우 공백 처리 방법.</param>
         /// <param name="nullValue"><c>null</c>이 아닌 경우 필드의 값과 같다면 해당 필드는 <c>null</c>을 반환한다. <paramref name="trimMode"/>가 적용된 이후의 값을 비교한다.</param>
+        /// <param name="leaveOpen"><c>false</c>라면 <see cref="Dispose"/> 호출 시 입력 받은 <see cref="Stream"/> 개체의 <see cref="Stream.Dispose"/>를 호출한다.</param>
         /// <exception cref="ArgumentNullException"><paramref name="stream"/>이 <c>null</c>인 경우.</exception>
         /// <exception cref="ArgumentException"><paramref name="fieldSeparator"/>가 <c>'\r'</c>, <c>'\n'</c>인 경우.</exception>
         /// <exception cref="ArgumentException"><paramref name="quote"/>가 <paramref name="fieldSeparator"/>와 같거나 <c>'\r'</c>, <c>'\n'</c>인 경우.</exception>
@@ -39,13 +39,13 @@ namespace Macaron.Csv.Iterators
         /// </remarks>
         public CsvStreamIterator(
             Stream stream,
-            bool leaveOpen = false,
             char fieldSeparator = ',',
             char? quote = '"',
             char? escape = '"',
             CsvRecordTerminator? recordTerminator = null,
             CsvTrimMode trimMode = CsvTrimMode.None,
-            string nullValue = null)
+            string nullValue = null,
+            bool leaveOpen = false)
         {
             if (stream == null)
             {
@@ -60,13 +60,13 @@ namespace Macaron.Csv.Iterators
         /// <see cref="TextReader"/> 개체를 사용하여 <see cref="CsvStreamIterator"/> 개체를 생성한다.
         /// </summary>
         /// <param name="reader">CSV 데이터를 가진 <see cref="TextReader"/> 개체.</param>
-        /// <param name="leaveOpen"><c>false</c>라면 <see cref="Dispose"/> 호출 시 입력 받은 <see cref="TextReader"/> 개체의 <see cref="TextReader.Dispose"/>를 호출한다.</param>
         /// <param name="fieldSeparator">필드 구분자. <c>'\r'</c>, <c>'\n'</c>은 허용되지 않는다.</param>
         /// <param name="quote">인용부호. <paramref name="fieldSeparator"/>, <c>'\r'</c>, <c>'\n'</c>은 허용되지 않는다.</param>
         /// <param name="escape">이스케이프. <paramref name="fieldSeparator"/>, <c>'\r'</c>, <c>'\n'</c>은 허용되지 않는다.</param>
         /// <param name="recordTerminator">레코드 구분자. <c>null</c>인 경우 첫 번째 레코드의 구분자를 사용한다.</param>
         /// <param name="trimMode">인용부호로 둘러 쌓이지 않은 필드의 좌우 공백 처리 방법.</param>
         /// <param name="nullValue"><c>null</c>이 아닌 경우 필드의 값과 같다면 해당 필드는 <c>null</c>을 반환한다. <paramref name="trimMode"/>가 적용된 이후의 값을 비교한다.</param>
+        /// <param name="leaveOpen"><c>false</c>라면 <see cref="Dispose"/> 호출 시 입력 받은 <see cref="TextReader"/> 개체의 <see cref="TextReader.Dispose"/>를 호출한다.</param>
         /// <exception cref="ArgumentNullException"><paramref name="reader"/>가 <c>null</c>인 경우.</exception>
         /// <exception cref="ArgumentException"><paramref name="fieldSeparator"/>가 <c>'\r'</c>, <c>'\n'</c>인 경우.</exception>
         /// <exception cref="ArgumentException"><paramref name="quote"/>가 <paramref name="fieldSeparator"/>와 같거나 <c>'\r'</c>, <c>'\n'</c>인 경우.</exception>
@@ -76,13 +76,13 @@ namespace Macaron.Csv.Iterators
         /// </remarks>
         public CsvStreamIterator(
             TextReader reader,
-            bool leaveOpen = false,
             char fieldSeparator = ',',
             char? quote = '"',
             char? escape = '"',
             CsvRecordTerminator? recordTerminator = null,
             CsvTrimMode trimMode = CsvTrimMode.None,
-            string nullValue = null)
+            string nullValue = null,
+            bool leaveOpen = false)
         {
             Init(reader, leaveOpen, fieldSeparator, quote, escape, recordTerminator, trimMode, nullValue);
         }
