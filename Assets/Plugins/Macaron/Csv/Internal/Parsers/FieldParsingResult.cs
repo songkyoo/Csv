@@ -7,6 +7,7 @@ namespace Macaron.Csv.Internal.Parsers
     {
         public string Value;
         public int Length;
+        public FieldEnd End;
         public bool IsLast;
         public int LineNumber;
         public int LinePosition;
