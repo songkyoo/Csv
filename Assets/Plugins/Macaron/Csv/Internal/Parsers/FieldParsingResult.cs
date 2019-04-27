@@ -6,8 +6,8 @@ namespace Macaron.Csv.Internal.Parsers
     internal struct FieldParsingResult
     {
         public string Value;
-        public int Length;
         public FieldEnd End;
+        public int Length;
         public bool IsLast;
         public int LineNumber;
         public int LinePosition;

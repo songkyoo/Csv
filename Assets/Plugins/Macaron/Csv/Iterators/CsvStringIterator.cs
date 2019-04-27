@@ -4,7 +4,7 @@ using Macaron.Csv.Internal.Parsers;
 namespace Macaron.Csv.Iterators
 {
     /// <summary>
-    /// CSV 문자열을 입력받는 <see cref="ICsvIterator"/> 구현.
+    /// CSV 문자열을 사용하는 <see cref="ICsvIterator"/> 구현.
     /// </summary>
     public class CsvStringIterator : CsvIterator
     {
@@ -19,7 +19,7 @@ namespace Macaron.Csv.Iterators
         private bool _disposed;
 
         /// <summary>
-        /// CSV 문자열을 입력받아 <see cref="CsvIterator"/> 개체를 생성한다.
+        /// 문자열을 사용하여 <see cref="CsvStringIterator"/> 개체를 생성한다.
         /// </summary>
         /// <param name="str">CSV 문자열.</param>
         /// <param name="fieldSeparator">필드 구분자. <c>'\r'</c>, <c>'\n'</c>은 허용되지 않는다.</param>
