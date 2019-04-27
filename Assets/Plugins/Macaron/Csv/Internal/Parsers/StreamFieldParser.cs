@@ -275,7 +275,6 @@ namespace Macaron.Csv.Internal.Parsers
                 _linePosition += 1;
             }
 
-
             if (IsEndOfField(ch, reader.Next))
             {
                 if (ch == _separator)

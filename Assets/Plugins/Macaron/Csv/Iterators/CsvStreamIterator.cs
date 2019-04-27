@@ -9,6 +9,7 @@ namespace Macaron.Csv.Iterators
     /// </summary>
     public class CsvStreamIterator : CsvIterator
     {
+        #region Fields
         private TextReader _reader;
         private bool _leaveOpen;
         private StreamRecordParser _recordParser;
@@ -18,7 +19,9 @@ namespace Macaron.Csv.Iterators
         private int _nextLineNumber;
         private int _linePosition;
         private bool _disposed;
+        #endregion
 
+        #region Constructors
         /// <summary>
         /// <see cref="Stream"/> 개체를 사용하여 <see cref="CsvStreamIterator"/> 개체를 생성한다.
         /// </summary>
@@ -86,39 +89,7 @@ namespace Macaron.Csv.Iterators
         {
             Init(reader, leaveOpen, fieldSeparator, quote, escape, recordTerminator, trimMode, nullValue);
         }
-
-        private void Init(
-            TextReader reader,
-            bool leaveOpen,
-            char fieldSeparator,
-            char? quote,
-            char? escape,
-            CsvRecordTerminator? recordTerminator,
-            CsvTrimMode trimMode,
-            string nullValue)
-        {
-            if (reader == null)
-            {
-                throw new ArgumentNullException("reader");
-            }
-
-            var fieldParser = new StreamFieldParser(
-                fieldSeparator,
-                quote,
-                escape,
-                recordTerminator,
-                trimMode,
-                nullValue);
-            var recordParser = new StreamRecordParser(fieldParser);
-
-            _reader = reader;
-            _leaveOpen = leaveOpen;
-            _recordParser = recordParser;
-            _recordTerminator = recordTerminator;
-            _lineNumber = 1;
-            _nextLineNumber = 1;
-            _linePosition = 1;
-        }
+        #endregion
 
         #region Overrides
         protected override string[] GetRecord()
@@ -187,5 +158,38 @@ namespace Macaron.Csv.Iterators
             }
         }
         #endregion
+
+        private void Init(
+            TextReader reader,
+            bool leaveOpen,
+            char fieldSeparator,
+            char? quote,
+            char? escape,
+            CsvRecordTerminator? recordTerminator,
+            CsvTrimMode trimMode,
+            string nullValue)
+        {
+            if (reader == null)
+            {
+                throw new ArgumentNullException("reader");
+            }
+
+            var fieldParser = new StreamFieldParser(
+                fieldSeparator,
+                quote,
+                escape,
+                recordTerminator,
+                trimMode,
+                nullValue);
+            var recordParser = new StreamRecordParser(fieldParser);
+
+            _reader = reader;
+            _leaveOpen = leaveOpen;
+            _recordParser = recordParser;
+            _recordTerminator = recordTerminator;
+            _lineNumber = 1;
+            _nextLineNumber = 1;
+            _linePosition = 1;
+        }
     }
 }

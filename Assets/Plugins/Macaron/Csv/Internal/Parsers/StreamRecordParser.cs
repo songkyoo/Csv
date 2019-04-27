@@ -51,11 +51,11 @@ namespace Macaron.Csv.Internal.Parsers
             {
                 return new RecordParsingResult
                 {
-                    #if !UNITY_5_6_OR_NEWER || NET_2_0 || NET_2_0_SUBSET
+#if !UNITY_5_6_OR_NEWER || NET_2_0 || NET_2_0_SUBSET
                     Values = new string[0],
-                    #else
+#else
                     Values = System.Array.Empty<string>(),
-                    #endif
+#endif
                     Terminator = null,
                     Length = 0,
                     LineNumber = lineNumber,

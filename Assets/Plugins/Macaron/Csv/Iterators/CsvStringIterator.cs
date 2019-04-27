@@ -8,6 +8,7 @@ namespace Macaron.Csv.Iterators
     /// </summary>
     public class CsvStringIterator : CsvIterator
     {
+        #region Fields
         private string _str;
         private StringRecordParser _recordParser;
         private int _index;
@@ -17,7 +18,9 @@ namespace Macaron.Csv.Iterators
         private int _nextLineNumber;
         private int _linePosition;
         private bool _disposed;
+        #endregion
 
+        #region Constructors
         /// <summary>
         /// 문자열을 사용하여 <see cref="CsvStringIterator"/> 개체를 생성한다.
         /// </summary>
@@ -65,6 +68,7 @@ namespace Macaron.Csv.Iterators
             _nextLineNumber = 1;
             _linePosition = 1;
         }
+        #endregion
 
         #region Overrides
         protected override string[] GetRecord()
