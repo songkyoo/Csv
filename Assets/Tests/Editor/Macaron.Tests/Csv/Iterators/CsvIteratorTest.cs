@@ -8,16 +8,8 @@ using Macaron.Csv.Iterators;
 namespace Macaron.Tests.Csv.Iterators
 {
     [TestFixture]
-    public class CsvIteratorTest : AssertionHelper
+    public abstract class CsvIteratorTest : AssertionHelper
     {
-        [Test]
-        public void Ctor_StrParamIsNull_ThrowsException()
-        {
-            Assert.Throws(
-                TypeOf<ArgumentNullException>().And.Property("ParamName").EqualTo("str"),
-                () => CreateIterator(null));
-        }
-
         [Test]
         public void Record_MoveNextMethodNotCalled_ReturnsNull()
         {
@@ -141,16 +133,13 @@ namespace Macaron.Tests.Csv.Iterators
             Assert.Throws(TypeOf<ObjectDisposedException>(), () => iterator.MoveNext());
         }
 
-        private ICsvIterator CreateIterator(
+        protected abstract ICsvIterator CreateIterator(
             string str,
             char fieldSeparator = ',',
             char? quote = '"',
             char? escape = '"',
             CsvRecordTerminator? recordTerminator = null,
             CsvTrimMode trimMode = CsvTrimMode.None,
-            string nullValue = null)
-        {
-            return new CsvStringIterator(str, fieldSeparator, quote, escape, recordTerminator, trimMode, nullValue);
-        }
+            string nullValue = null);
     }
 }
