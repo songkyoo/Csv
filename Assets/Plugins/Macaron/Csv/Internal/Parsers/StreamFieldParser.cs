@@ -171,6 +171,7 @@ namespace Macaron.Csv.Internal.Parsers
             return new FieldParsingResult
             {
                 Value = GetValue(isQuoted),
+                End = fieldEnd,
                 Length = cacheReader.Length,
                 IsLast = isLast,
                 LineNumber = _lineNumber,
@@ -231,7 +232,7 @@ namespace Macaron.Csv.Internal.Parsers
             }
 
             // 여기서 ch는 escape 또는 \r 또는 \n이다.
-            _value.Append((char)reader.Read());
+            _value.Append((char)ch);
 
             if (ch == '\r' || ch == '\n')
             {
@@ -277,6 +278,11 @@ namespace Macaron.Csv.Internal.Parsers
 
             if (IsEndOfField(ch, reader.Next))
             {
+                if (ch == _separator)
+                {
+                    _linePosition += 1;
+                }
+
                 return;
             }
 

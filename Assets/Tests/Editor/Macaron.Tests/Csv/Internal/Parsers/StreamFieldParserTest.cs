@@ -199,6 +199,7 @@ namespace Macaron.Tests.Csv.Internal.Parsers
         [TestCase("\'\'", '\'', ExpectedResult="")]
         [TestCase("\"Heckler & Koch\",PSG1", '"', ExpectedResult="Heckler & Koch")]
         [TestCase("\'Heckler & Koch\',PSG1", '\'', ExpectedResult="Heckler & Koch")]
+        [TestCase("\".243 Winchester\r\n7.62x51mm NATO\"", '"', ExpectedResult=".243 Winchester\r\n7.62x51mm NATO")]
         public string Parse_QuotedField_ReturnsValueExceptQuote(string str, char quote)
         {
             var parser = CreateParser(quote: quote);
@@ -269,6 +270,7 @@ namespace Macaron.Tests.Csv.Internal.Parsers
 
         [TestCase("Heckler & Koch", 346, ExpectedResult=360)]
         [TestCase("\"Accuracy International\"", 765, ExpectedResult=789)]
+        [TestCase("\"7.62mmx51mm NATO,.300Winchester Magnum,7.5x55mm Swiss\"", 825, ExpectedResult=880)]
         public int Parse_FieldConsistsOfSingleLine_ReturnsRelativeLinePositionFromLinePositionParam(string str, int linePosition)
         {
             var parser = CreateParser();
