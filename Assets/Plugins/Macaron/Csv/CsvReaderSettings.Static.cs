@@ -6,7 +6,6 @@ namespace Macaron.Csv
     {
         public static readonly CsvReaderSettings Default;
         public static readonly CsvReaderSettings RFC4810;
-        public static readonly CsvReaderSettings Excel;
         public static readonly CsvReaderSettings MySQL;
 
         static CsvReaderSettings()
@@ -18,13 +17,6 @@ namespace Macaron.Csv
                 Escape = '"'
             };
             RFC4810 = new CsvReaderSettings
-            {
-                FieldSeparator = ',',
-                Quote = '"',
-                Escape = '"',
-                RecordTerminator = CsvRecordTerminator.CRLF
-            };
-            Excel = new CsvReaderSettings
             {
                 FieldSeparator = ',',
                 Quote = '"',
