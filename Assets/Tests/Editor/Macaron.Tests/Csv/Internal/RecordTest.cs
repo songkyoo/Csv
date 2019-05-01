@@ -7,15 +7,8 @@ using Macaron.Csv.Internal.Headers;
 namespace Macaron.Tests.Csv.Internal
 {
     [TestFixture]
-    public class RecordTEnumTest : AssertionHelper
+    public class RecordTest : AssertionHelper
     {
-        private enum ColumnName
-        {
-            Manufacturer,
-            Name,
-            Cartridge
-        }
-
         [Test]
         public void Ctor_HeaderParamIsNull_ThrowsException()
         {
@@ -65,7 +58,7 @@ namespace Macaron.Tests.Csv.Internal
             var fields = new[] { "Accuracy International", "AWP", ".243 Winchester" };
             var record = CreateRecord(header, fields);
 
-            Assert.That(record.Get(ColumnName.Manufacturer), EqualTo(fields[0]));
+            Assert.That(record.Get("Manufacturer"), EqualTo(fields[0]));
         }
 
         [Test]
@@ -74,21 +67,21 @@ namespace Macaron.Tests.Csv.Internal
             var header = CreateHeader();
             var fields = new[] { "Accuracy International", "AWP", ".243 Winchester" };
             var record = CreateRecord(header, fields);
-            var invalidColumnName = (ColumnName)(-1);
+            var invalidColumnName = "Action";
 
             Assert.Throws(
                 TypeOf<ArgumentOutOfRangeException>().And.Property("ParamName").EqualTo("columnName"),
                 () => record.Get(invalidColumnName));
         }
 
-        private ICsvHeader<ColumnName> CreateHeader()
+        private ICsvHeader<string> CreateHeader()
         {
-            return new EnumHeader<ColumnName>(null);
+            return new DictHeader(new[] { "Manufacturer", "Name", "Cartridge" }, null);
         }
 
-        private ICsvRecord<ColumnName> CreateRecord(ICsvHeader<ColumnName> header, string[] fields)
+        private ICsvRecord<string> CreateRecord(ICsvHeader<string> header, string[] fields)
         {
-            return new Record<ColumnName>(header, fields);
+            return new Record<string>(header, fields);
         }
     }
 }

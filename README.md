@@ -89,48 +89,6 @@ using (var reader = CsvReader.Create(str, CsvReaderSettings.Default, headerPolic
 // Walther WA 2000 7.62x51mm NATO
 ```
 
-또는 헤더와 같은 이름을 가지는 열거형을 사용할 수 있습니다.
-
-```csharp
-enum Header
-{
-    Manufacturer,
-    Name,
-    Cartridge
-}
-
-var str =
-    "Manufacturer,Name,Cartridge\r\n" +
-    "Heckler & Koch,PSG1,76x51mm NATO\r\n" +
-    "Denel,NTW-20,20x82mm\r\n";
-
-// 첫 번째 레코드를 헤더로 사용하고 헤더에 접근하기 위해 같은 이름을 가지는 열거형을 사용합니다.
-var headerPolicy = CsvHeaderPolicies.FirstRecord<Header>();
-
-// CSV 데이터가 헤더를 가지지 않는 경우 직접 입력할 수 있습니다.
-// var headerPolicy = CsvHeaderPolicies.UserDefined<Header>(new[] { "Manufacturer", "Name", "Cartridge" });
-
-// 헤더 정보가 없다면 열거형의 이름을 사용합니다. 순서는 열거형의 값으로 결정됩니다.
-// var headerPolicy = CsvHeaderPolicies.UserDefined<Header>();
-
-using (var reader = CsvReader.Create(str, CsvReaderSettings.Default, headerPolicy))
-{
-    while (reader.Read())
-    {
-        var record = reader.Record;
-        Debug.LogFormat(
-            "{0} {1} {2}",
-            record.Get(Header.Manufacturer),
-            record.Get(Header.Name),
-            record.Get(Header.Cartridge));
-    }
-}
-
-// 결과
-// Heckler & Koch PSG1 76x51mm NATO
-// Denel NTW-20 20x82mm
-```
-
 ### CsvReaderSettings를 사용하여 CSV 형식을 지정
 
 CSV 형식과 관련된 설정을 지정하여 `ICsvReader<T>` 개체를 생성할 수 있습니다.
