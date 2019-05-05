@@ -1,14 +1,13 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Globalization;
 
 #if UNITY_EDITOR
 [assembly: System.Runtime.CompilerServices.InternalsVisibleTo("Assembly-CSharp-Editor")]
 #endif
 namespace Macaron.Csv.Internal.Headers
 {
-    internal class IndexHeader : ICsvHeader<int>
+    internal partial class IndexHeader : ICsvHeader<int>
     {
         #region Fields
         private readonly string[] _columnNames;
@@ -22,10 +21,12 @@ namespace Macaron.Csv.Internal.Headers
                 throw new ArgumentOutOfRangeException("count");
             }
 
+            var columnNameGenerator = new ColumnNameGenerator();
             _columnNames = new string[count];
+
             for (int i = 0; i < count; ++i)
             {
-                _columnNames[i] = i.ToString(CultureInfo.InvariantCulture);
+                _columnNames[i] = columnNameGenerator.Next();
             }
         }
         #endregion

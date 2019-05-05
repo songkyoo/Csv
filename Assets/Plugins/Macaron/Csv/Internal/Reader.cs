@@ -9,14 +9,13 @@ namespace Macaron.Csv.Internal
     internal class Reader<T> : ICsvReader<T>
     {
         #region Fields
-        private readonly bool _hideHeader;
-        private ICsvIterator _iterator;
         private ICsvHeader<T> _header;
+        private ICsvIterator _iterator;
         private ICsvRecord<T> _record;
         #endregion
 
         #region Constructors
-        public Reader(ICsvIterator iterator, ICsvHeaderPolicy<T> headerPolicy, bool hideHeader)
+        public Reader(ICsvIterator iterator, ICsvHeaderPolicy<T> headerPolicy)
         {
             if (iterator == null)
             {
@@ -40,7 +39,6 @@ namespace Macaron.Csv.Internal
                 }
             }
 
-            _hideHeader = hideHeader;
             _iterator = iterator;
         }
         #endregion
@@ -51,7 +49,7 @@ namespace Macaron.Csv.Internal
             get
             {
                 ThrowIfDisposed();
-                return _hideHeader ? null : _header;
+                return _header;
             }
         }
 
