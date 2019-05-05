@@ -9,13 +9,13 @@ namespace Macaron.Tests.Csv
     public class CsvParsingExceptionTest : AssertionHelper
     {
         [Test]
-        public void Constructor_DeserializeSerializedStream_HasSameValueAsOriginalObject()
+        public void Ctor_UsesSerializedStream_HasSameValueAsOriginalInstance()
         {
             var message = "Message.";
             var lineNumber = int.MinValue;
             var linePosition = int.MaxValue;
 
-            var exception = new CsvParsingException(message, lineNumber, linePosition);
+            var exception = new CsvParsingException(message, null, lineNumber, linePosition);
 
             using (var stream = new MemoryStream())
             {

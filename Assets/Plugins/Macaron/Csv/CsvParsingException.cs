@@ -1,7 +1,7 @@
 using System;
-using System.Collections.Generic;
 using System.Globalization;
 using System.Runtime.Serialization;
+using System.Text;
 
 namespace Macaron.Csv
 {
@@ -29,11 +29,11 @@ namespace Macaron.Csv
         {
         }
 
-        public CsvParsingException(string message, int lineNumber, int linePosition, Exception inner = null)
+        public CsvParsingException(string message, Exception inner, int lineNumber, int linePosition)
             : base(message, inner)
         {
-            this._lineNumber = lineNumber;
-            this._linePosition = linePosition;
+            _lineNumber = lineNumber;
+            _linePosition = linePosition;
         }
 
         protected CsvParsingException(SerializationInfo info, StreamingContext context) : base(info, context)
@@ -48,21 +48,19 @@ namespace Macaron.Csv
         {
             get
             {
-                var strs = new List<string>();
-
                 if (_lineNumber > 0)
                 {
-                    strs.Add("줄 번호: " + _lineNumber.ToString(CultureInfo.InvariantCulture));
-                }
+                    var builder = new StringBuilder(base.Message);
+                    builder.Append("(줄 번호: ");
+                    builder.Append(_lineNumber.ToString(CultureInfo.InvariantCulture));
 
-                if (_linePosition > 0)
-                {
-                    strs.Add("위치: " + _lineNumber.ToString(CultureInfo.InvariantCulture));
-                }
+                    if (_linePosition > 0)
+                    {
+                        builder.Append(", 위치: ");
+                        builder.Append(_linePosition.ToString(CultureInfo.InvariantCulture));
+                    }
 
-                if (strs.Count > 0)
-                {
-                    return string.Format(base.Message + "({0})", string.Join(", ", strs.ToArray()));
+                    return builder.Append(')').ToString();
                 }
                 else
                 {

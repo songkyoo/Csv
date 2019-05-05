@@ -83,6 +83,7 @@ namespace Macaron.Csv.Iterators
                 {
                     throw new CsvParsingException(
                         "일관성 없는 레코드 구분자입니다.",
+                        null,
                         GetLineNumber(),
                         GetLinePosition());
                 }

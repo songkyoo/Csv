@@ -151,7 +151,11 @@ namespace Macaron.Csv.Internal.Parsers
                 if (endIndex == -1)
                 {
                     // 닫는 인용부호를 찾을 수 없는 경우 여는 인용부호를 오류 발생 위치로 사용한다.
-                    throw new CsvParsingException("닫는 인용부호를 찾을 수 없습니다.", lineNumber, linePosition);
+                    throw new CsvParsingException(
+                        "닫는 인용부호를 찾을 수 없습니다.",
+                        null,
+                        lineNumber,
+                        linePosition);
                 }
 
                 _linePosition += 1;
@@ -170,6 +174,7 @@ namespace Macaron.Csv.Internal.Parsers
                 {
                     throw new CsvParsingException(
                         "필드 구분자 또는 레코드 구분자여야 합니다.",
+                        null,
                         _lineNumber,
                         _linePosition);
                 }
@@ -274,7 +279,11 @@ namespace Macaron.Csv.Internal.Parsers
             {
                 if (nextCh == null)
                 {
-                    throw new CsvParsingException("유효한 이스케이프 위치가 아닙니다.", _lineNumber, _linePosition);
+                    throw new CsvParsingException(
+                        "유효한 이스케이프 위치가 아닙니다.",
+                        null,
+                        _lineNumber,
+                        _linePosition);
                 }
 
                 if (nextCh == '\r' || nextCh == '\n' || nextCh == _separator || nextCh == _escape)
