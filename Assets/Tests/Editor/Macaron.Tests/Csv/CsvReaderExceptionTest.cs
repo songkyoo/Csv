@@ -9,12 +9,13 @@ namespace Macaron.Tests.Csv
     public class CsvReaderExceptionTest : AssertionHelper
     {
         [Test]
-        public void Constructor_DeserializeSerializedStream_HasSameValueAsOriginalObject()
+        public void Ctor_UsesSerializedStream_HasSameValueAsOriginalInstance()
         {
             var message = "Message.";
-            var recordNumber = int.MaxValue;
+            var recordNumber = int.MinValue;
+            var fieldNumber = int.MaxValue;
 
-            var exception = new CsvReaderException(message, recordNumber);
+            var exception = new CsvReaderException(message, null, recordNumber, fieldNumber);
 
             using (var stream = new MemoryStream())
             {
@@ -26,6 +27,7 @@ namespace Macaron.Tests.Csv
 
             Assert.That(exception.Message, StartWith(message));
             Assert.That(exception.RecordNumber, EqualTo(recordNumber));
+            Assert.That(exception.FieldNumber, EqualTo(fieldNumber));
         }
     }
 }
