@@ -1,5 +1,4 @@
 using System;
-using System.Globalization;
 using System.Runtime.Serialization;
 using System.Text;
 
@@ -52,12 +51,12 @@ namespace Macaron.Csv
                 {
                     var builder = new StringBuilder(base.Message);
                     builder.Append("(줄 번호: ");
-                    builder.Append(_lineNumber.ToString(CultureInfo.InvariantCulture));
+                    builder.Append(_lineNumber.ToString());
 
                     if (_linePosition > 0)
                     {
                         builder.Append(", 위치: ");
-                        builder.Append(_linePosition.ToString(CultureInfo.InvariantCulture));
+                        builder.Append(_linePosition.ToString());
                     }
 
                     return builder.Append(')').ToString();
