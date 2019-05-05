@@ -48,6 +48,11 @@ namespace Macaron.Csv.Internal
             get { return _fields.Length; }
         }
 
+        public ICsvHeader<T> Header
+        {
+            get { return _header; }
+        }
+
         public int RecordNumber
         {
             get { return _recordNumber; }

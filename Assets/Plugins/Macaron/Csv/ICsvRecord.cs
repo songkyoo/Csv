@@ -10,6 +10,12 @@ namespace Macaron.Csv
     public interface ICsvRecord<T> : IList<string>
     {
         /// <summary>
+        /// <see cref="Get"/> 메서드가 열 이름에 대한 인덱스를 얻기 위해 사용하는 <see cref="ICsvHeader{T}"/> 개체.
+        /// </summary>
+        /// <value><see cref="ICsvHeader{T}"/> 개체.</value>
+        ICsvHeader<T> Header { get; }
+
+        /// <summary>
         /// 레코드 번호.
         /// </summary>
         /// <value>레코드 번호.</value>
