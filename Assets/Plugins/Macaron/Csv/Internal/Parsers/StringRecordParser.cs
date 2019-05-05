@@ -73,6 +73,8 @@ namespace Macaron.Csv.Internal.Parsers
             _lineNumber = lineNumber;
             _linePosition = linePosition;
 
+            var terminator = default(CsvRecordTerminator?);
+
             while (true)
             {
                 var result = _fieldParser.Parse(str, _index, _lineNumber, _linePosition);
@@ -82,54 +84,21 @@ namespace Macaron.Csv.Internal.Parsers
                 _lineNumber = result.LineNumber;
                 _linePosition = result.LinePosition;
 
-                if (result.IsLast)
+                if (result.End != FieldEnd.Separator)
                 {
+                    switch (result.End)
+                    {
+                        case FieldEnd.CR: terminator = CsvRecordTerminator.CR; break;
+                        case FieldEnd.LF: terminator = CsvRecordTerminator.LF; break;
+                        case FieldEnd.CRLF: terminator = CsvRecordTerminator.CRLF; break;
+                    }
+
                     break;
                 }
-            }
-
-            var terminator = default(CsvRecordTerminator?);
-
-            if (_index < str.Length)
-            {
-                var ch = str[_index];
-                switch (ch)
-                {
-                    case '\r':
-                        if (_index + 1 < str.Length && str[_index + 1] == '\n')
-                        {
-                            terminator = CsvRecordTerminator.CRLF;
-                        }
-                        else
-                        {
-                            terminator = CsvRecordTerminator.CR;
-                        }
-                        break;
-
-                    case '\n':
-                        terminator = CsvRecordTerminator.LF;
-                        break;
-
-                    // ch가 \r, \n이 아닌 경우는 StringFieldParser에서 예외가 발생하기 때문에 처리하지 않는다.
-                }
-            }
-
-            var terminatorLength = 0;
-
-            switch (terminator)
-            {
-                case CsvRecordTerminator.CR:
-                case CsvRecordTerminator.LF:
-                    terminatorLength += 1;
-                    break;
-
-                case CsvRecordTerminator.CRLF:
-                    terminatorLength += 2;
-                    break;
             }
 
             var values = _values.ToArray();
-            var length = _index - startIndex + terminatorLength;
+            var length = _index - startIndex;
 
             return new RecordParsingResult
             {

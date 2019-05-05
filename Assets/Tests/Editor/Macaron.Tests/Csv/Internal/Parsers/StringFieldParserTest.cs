@@ -134,14 +134,14 @@ namespace Macaron.Tests.Csv.Internal.Parsers
             return result.Length;
         }
 
-        [TestCase("\r\nPSG1\r\n", CsvRecordTerminator.CRLF, ExpectedResult=0)]
-        [TestCase("\nPSG1\n", CsvRecordTerminator.LF, ExpectedResult=0)]
-        [TestCase("WA 2000\r\nPSG1\r\n", CsvRecordTerminator.CRLF, ExpectedResult=7)]
-        [TestCase("WA 2000\nPSG1\n", CsvRecordTerminator.LF, ExpectedResult=7)]
-        [TestCase("\"\"\r\n\"NTW-20\"\r\n", CsvRecordTerminator.CRLF, ExpectedResult=2)]
-        [TestCase("\"Noreen \"\"Bad News\"\" ULR 338\"\r\n\"NTW-20\"\r\n", CsvRecordTerminator.CRLF, ExpectedResult=29)]
-        [TestCase("\"7.62mmx51mm NATO\r\n.300Winchester Magnum\r\n7.5x55mm Swiss\"\r\n\"9x19mm Parabellum\"\r\n", CsvRecordTerminator.CRLF, ExpectedResult=57)]
-        public int Parse_LastFieldEndsWithRecordTerminator_ReturnsLengthToRecordTerminator(string str, CsvRecordTerminator recordTerminator)
+        [TestCase("\r\nPSG1\r\n", CsvRecordTerminator.CRLF, ExpectedResult=2)]
+        [TestCase("\nPSG1\n", CsvRecordTerminator.LF, ExpectedResult=1)]
+        [TestCase("WA 2000\r\nPSG1\r\n", CsvRecordTerminator.CRLF, ExpectedResult=9)]
+        [TestCase("WA 2000\nPSG1\n", CsvRecordTerminator.LF, ExpectedResult=8)]
+        [TestCase("\"\"\r\n\"NTW-20\"\r\n", CsvRecordTerminator.CRLF, ExpectedResult=4)]
+        [TestCase("\"Noreen \"\"Bad News\"\" ULR 338\"\r\n\"NTW-20\"\r\n", CsvRecordTerminator.CRLF, ExpectedResult=31)]
+        [TestCase("\"7.62mmx51mm NATO\r\n.300Winchester Magnum\r\n7.5x55mm Swiss\"\r\n\"9x19mm Parabellum\"\r\n", CsvRecordTerminator.CRLF, ExpectedResult=59)]
+        public int Parse_LastFieldEndsWithRecordTerminator_ReturnsLengthToNextField(string str, CsvRecordTerminator recordTerminator)
         {
             var parser = CreateParser(recordTerminator: recordTerminator);
             var result = parser.Parse(str, 0, 1, 1);

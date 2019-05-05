@@ -128,8 +128,8 @@ namespace Macaron.Csv.Internal.Parsers
                 return new FieldParsingResult
                 {
                     Value = _nullValue == string.Empty ? null : string.Empty,
+                    End = FieldEnd.EOF,
                     Length = 0,
-                    IsLast = true,
                     LineNumber = lineNumber,
                     LinePosition = linePosition
                 };
@@ -166,11 +166,38 @@ namespace Macaron.Csv.Internal.Parsers
                 endIndex = ParseUnquotedField(str, startIndex);
             }
 
+            var end = FieldEnd.EOF;
+
             // 문자열이 끝나지 않았다면 구분자가 와야 한다.
             if (endIndex < str.Length)
             {
                 var ch = str[endIndex];
-                if (ch != _separator && ch != '\r' && ch != '\n')
+                if (ch == _separator)
+                {
+                    end = FieldEnd.Separator;
+                    endIndex += 1;
+                    _linePosition += 1;
+                }
+                else if (ch == '\r')
+                {
+                    var nextIndex = endIndex + 1;
+                    if (nextIndex < str.Length && str[nextIndex] == '\n')
+                    {
+                        end = FieldEnd.CRLF;
+                        endIndex += 2;
+                    }
+                    else
+                    {
+                        end = FieldEnd.CR;
+                        endIndex += 1;
+                    }
+                }
+                else if (ch == '\n')
+                {
+                    end = FieldEnd.LF;
+                    endIndex += 1;
+                }
+                else
                 {
                     throw new CsvParsingException(
                         "필드 구분자 또는 레코드 구분자여야 합니다.",
@@ -180,16 +207,13 @@ namespace Macaron.Csv.Internal.Parsers
                 }
             }
 
-            var isLast = endIndex >= str.Length || str[endIndex] != _separator;
-            var separatorLength = isLast ? 0 : 1;
-
             return new FieldParsingResult
             {
                 Value = GetValue(isQuoted),
-                Length = endIndex - startIndex + separatorLength,
-                IsLast = isLast,
+                End = end,
+                Length = endIndex - startIndex,
                 LineNumber = _lineNumber,
-                LinePosition = _linePosition + separatorLength
+                LinePosition = _linePosition
             };
         }
 

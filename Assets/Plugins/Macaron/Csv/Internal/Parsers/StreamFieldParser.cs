@@ -124,8 +124,8 @@ namespace Macaron.Csv.Internal.Parsers
                 return new FieldParsingResult
                 {
                     Value = _nullValue == string.Empty ? null : string.Empty,
+                    End = FieldEnd.EOF,
                     Length = 0,
-                    IsLast = true,
                     LineNumber = lineNumber,
                     LinePosition = linePosition
                 };
@@ -170,14 +170,12 @@ namespace Macaron.Csv.Internal.Parsers
             }
 
             var fieldEnd = ParseFieldEnd(ref cacheReader);
-            var isLast = fieldEnd != FieldEnd.Separator;
 
             return new FieldParsingResult
             {
                 Value = GetValue(isQuoted),
                 End = fieldEnd,
                 Length = cacheReader.Length,
-                IsLast = isLast,
                 LineNumber = _lineNumber,
                 LinePosition = _linePosition
             };
