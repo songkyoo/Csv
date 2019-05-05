@@ -12,10 +12,10 @@ namespace Macaron.Tests.Csv
         public void Ctor_UsesSerializedStream_HasSameValueAsOriginalInstance()
         {
             var message = "Message.";
-            var recordNumber = int.MinValue;
-            var fieldNumber = int.MaxValue;
+            var recordNumber = int.MaxValue;
+            var columnName = "ColumnName";
 
-            var exception = new CsvReaderException(message, null, recordNumber, fieldNumber);
+            var exception = new CsvReaderException(message, null, recordNumber, columnName);
 
             using (var stream = new MemoryStream())
             {
@@ -27,7 +27,7 @@ namespace Macaron.Tests.Csv
 
             Assert.That(exception.Message, StartWith(message));
             Assert.That(exception.RecordNumber, EqualTo(recordNumber));
-            Assert.That(exception.FieldNumber, EqualTo(fieldNumber));
+            Assert.That(exception.ColumnName, EqualTo(columnName));
         }
     }
 }

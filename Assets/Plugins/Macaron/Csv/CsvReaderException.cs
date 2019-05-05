@@ -1,5 +1,4 @@
 using System;
-using System.Globalization;
 using System.Runtime.Serialization;
 using System.Text;
 
@@ -12,7 +11,7 @@ namespace Macaron.Csv
     public class CsvReaderException : CsvException
     {
         #region Fields
-        private readonly int _fieldNumber;
+        private readonly string _columnName;
         private readonly int _recordNumber;
         #endregion
 
@@ -29,17 +28,17 @@ namespace Macaron.Csv
         {
         }
 
-        public CsvReaderException(string message, Exception inner, int recordNumber, int fieldNumber)
+        public CsvReaderException(string message, Exception inner, int recordNumber, string columnName)
             : base(message, inner)
         {
             _recordNumber = recordNumber;
-            _fieldNumber = fieldNumber;
+            _columnName = columnName;
         }
 
         protected CsvReaderException(SerializationInfo info, StreamingContext context) : base(info, context)
         {
+            _columnName = info.GetString("ColumnName");
             _recordNumber = info.GetInt32("RecordNumber");
-            _fieldNumber = info.GetInt32("FieldNumber");
         }
         #endregion
 
@@ -52,12 +51,12 @@ namespace Macaron.Csv
                 {
                     var builder = new StringBuilder(base.Message);
                     builder.Append("(레코드 번호: ");
-                    builder.Append(_recordNumber.ToString(CultureInfo.InvariantCulture));
+                    builder.Append(_recordNumber.ToString());
 
-                    if (_fieldNumber > 0)
+                    if (!string.IsNullOrEmpty(_columnName))
                     {
-                        builder.Append(", 필드 번호: ");
-                        builder.Append(_fieldNumber.ToString(CultureInfo.InvariantCulture));
+                        builder.Append(", 열 이름: ");
+                        builder.Append(_columnName);
                     }
 
                     return builder.Append(')').ToString();
@@ -73,15 +72,15 @@ namespace Macaron.Csv
         {
             base.GetObjectData(info, context);
 
+            info.AddValue("ColumnName", _columnName);
             info.AddValue("RecordNumber", _recordNumber);
-            info.AddValue("FieldNumber", _fieldNumber);
         }
         #endregion
 
         #region Properties
-        public int FieldNumber
+        public string ColumnName
         {
-            get { return _fieldNumber; }
+            get { return _columnName; }
         }
 
         public int RecordNumber
