@@ -14,7 +14,7 @@ namespace Macaron.Csv
         /// </summary>
         /// <param name="columnName">열 이름.</param>
         /// <returns>지정한 열 이름에 대한 필드 값.</returns>
-        /// <exception cref="ArgumentOutOfRangeException"><paramref name="columnName"/>으로 필드를 찾을 수 없는 경우.</exception>
+        /// <exception cref="ArgumentException"><paramref name="columnName"/>이 유효한 열 이름이 아닌 경우.</exception>
         string Get(T columnName);
     }
 }

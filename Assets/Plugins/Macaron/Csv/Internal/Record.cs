@@ -62,7 +62,7 @@ namespace Macaron.Csv.Internal
 
             if (index == -1)
             {
-                throw new ArgumentOutOfRangeException("columnName");
+                throw new ArgumentException(columnName + "은 유효한 열 이름이 아닙니다.", "columnName");
             }
 
             return _fields[index];

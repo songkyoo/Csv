@@ -70,7 +70,7 @@ namespace Macaron.Tests.Csv.Internal
             var invalidColumnName = "Action";
 
             Assert.Throws(
-                TypeOf<ArgumentOutOfRangeException>().And.Property("ParamName").EqualTo("columnName"),
+                TypeOf<ArgumentException>().And.Property("ParamName").EqualTo("columnName"),
                 () => record.Get(invalidColumnName));
         }
 
