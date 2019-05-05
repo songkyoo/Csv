@@ -22,7 +22,7 @@ namespace Macaron.Csv
         public static ICsvReader<int> Create(string str, CsvReaderSettings settings)
         {
             var iterator = CreateIterator(str, settings);
-            return new Reader<int>(iterator, Index.Instance);
+            return new Reader<int>(iterator, IndexHeaderPolicy.Instance);
         }
 
         /// <summary>
@@ -52,7 +52,7 @@ namespace Macaron.Csv
         public static ICsvReader<int> Create(Stream stream, CsvReaderSettings settings, bool leaveOpen = false)
         {
             var iterator = CreateIterator(stream, settings, leaveOpen);
-            return new Reader<int>(iterator, Index.Instance);
+            return new Reader<int>(iterator, IndexHeaderPolicy.Instance);
         }
 
         /// <summary>
@@ -87,7 +87,7 @@ namespace Macaron.Csv
         public static ICsvReader<int> Create(TextReader reader, CsvReaderSettings settings, bool leaveOpen = false)
         {
             var iterator = CreateIterator(reader, settings, leaveOpen);
-            return new Reader<int>(iterator, Index.Instance);
+            return new Reader<int>(iterator, IndexHeaderPolicy.Instance);
         }
 
         /// <summary>

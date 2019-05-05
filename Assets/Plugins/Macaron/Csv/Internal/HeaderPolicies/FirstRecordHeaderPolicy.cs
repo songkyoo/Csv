@@ -5,12 +5,12 @@ using Macaron.Csv.Internal.Headers;
 
 namespace Macaron.Csv.Internal.HeaderPolicies
 {
-    internal class FirstRecord : ICsvHeaderPolicy<string>
+    internal class FirstRecordHeaderPolicy : ICsvHeaderPolicy<string>
     {
         private readonly Func<string, string> _selector;
         private readonly IEqualityComparer<string> _comparer;
 
-        public FirstRecord(Func<string, string> selector, IEqualityComparer<string> comparer)
+        public FirstRecordHeaderPolicy(Func<string, string> selector, IEqualityComparer<string> comparer)
         {
             _selector = selector;
             _comparer = comparer;

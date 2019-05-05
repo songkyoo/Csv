@@ -133,7 +133,7 @@ namespace Macaron.Tests.Csv.Internal
                 trimMode,
                 nullValue);
 
-            return new Reader<int>(iterator, Index.Instance);
+            return new Reader<int>(iterator, IndexHeaderPolicy.Instance);
         }
     }
 }

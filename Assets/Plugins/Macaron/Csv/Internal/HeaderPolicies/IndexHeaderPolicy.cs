@@ -3,11 +3,11 @@ using Macaron.Csv.Internal.Headers;
 
 namespace Macaron.Csv.Internal.HeaderPolicies
 {
-    internal class Index : ICsvHeaderPolicy<int>
+    internal class IndexHeaderPolicy : ICsvHeaderPolicy<int>
     {
-        public static readonly Index Instance = new Index();
+        public static readonly IndexHeaderPolicy Instance = new IndexHeaderPolicy();
 
-        private Index()
+        private IndexHeaderPolicy()
         {
             // 외부 생성을 금지.
         }

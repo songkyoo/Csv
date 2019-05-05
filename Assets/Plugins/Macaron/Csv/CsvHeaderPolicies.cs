@@ -1,6 +1,6 @@
 using System;
 using System.Collections.Generic;
-using HeaderPolicies = Macaron.Csv.Internal.HeaderPolicies;
+using Macaron.Csv.Internal.HeaderPolicies;
 
 namespace Macaron.Csv
 {
@@ -22,7 +22,7 @@ namespace Macaron.Csv
             Func<string, string> selector = null,
             IEqualityComparer<string> comparer = null)
         {
-            return new HeaderPolicies.FirstRecord(selector, comparer);
+            return new FirstRecordHeaderPolicy(selector, comparer);
         }
 
         /// <summary>
@@ -41,7 +41,7 @@ namespace Macaron.Csv
             IList<string> columnNames,
             IEqualityComparer<string> comparer = null)
         {
-            return new HeaderPolicies.UserDefined(columnNames, comparer);
+            return new UserDefinedHeaderPolicy(columnNames, comparer);
         }
     }
 }
