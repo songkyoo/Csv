@@ -16,7 +16,18 @@ namespace Macaron.Tests.Csv.Internal
 
             Assert.Throws(
                 TypeOf<ArgumentNullException>().And.Property("ParamName").EqualTo("header"),
-                () => CreateRecord(null, fields));
+                () => CreateRecord(null, 1, fields));
+        }
+
+        [Test]
+        public void Ctor_RecordNumberIsLessThanOne_ThrowsException()
+        {
+            var header = CreateHeader();
+            var fields = new[] { "Walther", "WA 2000", "7.62x51mm NATO" };
+
+            Assert.Throws(
+                TypeOf<ArgumentOutOfRangeException>().And.Property("ParamName").EqualTo("recordNumber"),
+                () => CreateRecord(header, 0, fields));
         }
 
         [Test]
@@ -26,7 +37,7 @@ namespace Macaron.Tests.Csv.Internal
 
             Assert.Throws(
                 TypeOf<ArgumentNullException>().And.Property("ParamName").EqualTo("fields"),
-                () => CreateRecord(header, null));
+                () => CreateRecord(header, 1, null));
         }
 
         [Test]
@@ -34,7 +45,7 @@ namespace Macaron.Tests.Csv.Internal
         {
             var header = CreateHeader();
             var fields = new[] { "Walther", "WA 2000", "7.62x51mm NATO" };
-            var record = CreateRecord(header, fields);
+            var record = CreateRecord(header, 1, fields);
 
             fields[2] = ".300Winchester Magnum";
 
@@ -42,11 +53,22 @@ namespace Macaron.Tests.Csv.Internal
         }
 
         [Test]
+        public void RecordNumber_RecordNumberParamOfCtorIsValid_ReturnsValue()
+        {
+            var header = CreateHeader();
+            var recordNumber = 1;
+            var fields = new[] { "Walther", "WA 2000", "7.62x51mm NATO" };
+            var record = CreateRecord(header, recordNumber, fields);
+
+            Assert.That(record.RecordNumber, EqualTo(recordNumber));
+        }
+
+        [Test]
         public void Item_SetValue_ThrowsException()
         {
             var header = CreateHeader();
             var fields = new[] { "Heckler & Koch", "PSG1", "7.62x51mm NATO" };
-            var record = CreateRecord(header, fields);
+            var record = CreateRecord(header, 1, fields);
 
             Assert.Throws(TypeOf<NotSupportedException>(), () => record[0] = "Denel");
         }
@@ -56,7 +78,7 @@ namespace Macaron.Tests.Csv.Internal
         {
             var header = CreateHeader();
             var fields = new[] { "Accuracy International", "AWP", ".243 Winchester" };
-            var record = CreateRecord(header, fields);
+            var record = CreateRecord(header, 1, fields);
 
             Assert.That(record.Get("Manufacturer"), EqualTo(fields[0]));
         }
@@ -66,7 +88,7 @@ namespace Macaron.Tests.Csv.Internal
         {
             var header = CreateHeader();
             var fields = new[] { "Accuracy International", "AWP", ".243 Winchester" };
-            var record = CreateRecord(header, fields);
+            var record = CreateRecord(header, 1, fields);
             var invalidColumnName = "Action";
 
             Assert.Throws(
@@ -79,9 +101,9 @@ namespace Macaron.Tests.Csv.Internal
             return new DictHeader(new[] { "Manufacturer", "Name", "Cartridge" }, null);
         }
 
-        private ICsvRecord<string> CreateRecord(ICsvHeader<string> header, string[] fields)
+        private ICsvRecord<string> CreateRecord(ICsvHeader<string> header, int recordNumber, string[] fields)
         {
-            return new Record<string>(header, fields);
+            return new Record<string>(header, recordNumber, fields);
         }
     }
 }

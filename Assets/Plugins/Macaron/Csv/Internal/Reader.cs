@@ -100,7 +100,7 @@ namespace Macaron.Csv.Internal
                 throw new CsvReaderException("필드 수가 일치하지 않습니다.", _iterator.RecordNumber);
             }
 
-            _record = new Record<T>(_header, record);
+            _record = new Record<T>(_header, _iterator.RecordNumber, record);
             _iterator.MoveNext();
 
             return true;

@@ -10,13 +10,19 @@ namespace Macaron.Csv.Internal
     internal class Record<T> : ICsvRecord<T>
     {
         private readonly ICsvHeader<T> _header;
+        private readonly int _recordNumber;
         private readonly string[] _fields;
 
-        public Record(ICsvHeader<T> header, IList<string> fields)
+        public Record(ICsvHeader<T> header, int recordNumber, IList<string> fields)
         {
             if (header == null)
             {
                 throw new ArgumentNullException("header");
+            }
+
+            if (recordNumber < 1)
+            {
+                throw new ArgumentOutOfRangeException("recordNumber");
             }
 
             if (fields == null)
@@ -25,6 +31,7 @@ namespace Macaron.Csv.Internal
             }
 
             _header = header;
+            _recordNumber = recordNumber;
             _fields = new string[fields.Count];
             fields.CopyTo(_fields, 0);
         }
@@ -39,6 +46,11 @@ namespace Macaron.Csv.Internal
         public int Count
         {
             get { return _fields.Length; }
+        }
+
+        public int RecordNumber
+        {
+            get { return _recordNumber; }
         }
 
         bool ICollection<string>.IsReadOnly

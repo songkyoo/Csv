@@ -10,6 +10,12 @@ namespace Macaron.Csv
     public interface ICsvRecord<T> : IList<string>
     {
         /// <summary>
+        /// 레코드 번호.
+        /// </summary>
+        /// <value>레코드 번호.</value>
+        int RecordNumber { get; }
+
+        /// <summary>
         /// 지정한 형식을 열 이름으로 필드 값을 가져온다.
         /// </summary>
         /// <param name="columnName">열 이름.</param>
