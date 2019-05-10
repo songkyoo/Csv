@@ -1,7 +1,5 @@
 using System;
 using System.Globalization;
-using System.IO;
-using System.Runtime.Serialization.Formatters.Binary;
 using System.Text.RegularExpressions;
 using NUnit.Framework;
 using Macaron.Csv;
@@ -14,7 +12,20 @@ namespace Macaron.Tests.Csv
     public class ICsvRecordExtensionMethodTest : AssertionHelper
     {
         [Test]
-        public void ParseAsBoolean_FieldValueIsValid_ReturnsParsedValue()
+        public void Parse_ColumnNameParamIsValid_ReturnsField()
+        {
+            var recordNumber = 1;
+            var columnName = "ColumnName";
+            var value = "Value";
+            var record = CreateRecord(new[] { columnName }, recordNumber, new[] { value });
+
+            var field = record.Parse(columnName);
+
+            Assert.That(field, EqualTo(new ICsvRecordExtensionMethod.Field(recordNumber, columnName, value)));
+        }
+
+        [Test]
+        public void AsBoolean_FieldValueIsValid_ReturnsParsedValue()
         {
             var columnNames = new[] { "Type", "Value" };
             var fields = new[] { "Boolean", "TRUE" };
@@ -26,7 +37,7 @@ namespace Macaron.Tests.Csv
         }
 
         [Test]
-        public void ParseAsBoolean_FieldValueIsInvalid_ThrowsException()
+        public void AsBoolean_FieldValueIsInvalid_ThrowsException()
         {
             var columnNames = new[] { "Type", "Value" };
             var fields = new[] { "Boolean", "NotBoolean" };
@@ -38,7 +49,7 @@ namespace Macaron.Tests.Csv
         }
 
         [Test]
-        public void ParseAsBoolean_FieldValueIsNullOrEmpty_ReturnsNull()
+        public void AsBoolean_FieldValueIsNullOrEmpty_ReturnsNull()
         {
             var columnNames = new[] { "Type", "Value" };
             var fields = new[] { "Boolean", "" };
@@ -50,7 +61,7 @@ namespace Macaron.Tests.Csv
         }
 
         [Test]
-        public void ParseAsByte_FieldValueIsValid_ReturnsParsedValue()
+        public void AsByte_FieldValueIsValid_ReturnsParsedValue()
         {
             var columnNames = new[] { "Type", "Value" };
             var fields = new[] { "Byte", byte.MaxValue.ToString() };
@@ -62,7 +73,7 @@ namespace Macaron.Tests.Csv
         }
 
         [Test]
-        public void ParseAsByte_FieldValueIsInvalid_ThrowsException()
+        public void AsByte_FieldValueIsInvalid_ThrowsException()
         {
             var columnNames = new[] { "Type", "Value" };
             var fields = new[] { "Byte", "NotNumber" };
@@ -74,7 +85,7 @@ namespace Macaron.Tests.Csv
         }
 
         [Test]
-        public void ParseAsByte_StylesAndProviderParamIsValid_UsesForParsing()
+        public void AsByte_StylesAndProviderParamIsValid_UsesForParsing()
         {
             var columnNames = new[] { "Type", "Value" };
             var fields = new[] { "Byte", "$100" };
@@ -88,7 +99,7 @@ namespace Macaron.Tests.Csv
         }
 
         [Test]
-        public void ParseAsByte_FieldValueIsNullOrEmpty_ReturnsNull()
+        public void AsByte_FieldValueIsNullOrEmpty_ReturnsNull()
         {
             var columnNames = new[] { "Type", "Value" };
             var fields = new[] { "Byte", "" };
@@ -100,7 +111,7 @@ namespace Macaron.Tests.Csv
         }
 
         [Test]
-        public void ParseAsChar_FieldValueIsValid_ReturnsParsedValue()
+        public void AsChar_FieldValueIsValid_ReturnsParsedValue()
         {
             var columnNames = new[] { "Type", "Value" };
             var fields = new[] { "Char", "A" };
@@ -112,7 +123,7 @@ namespace Macaron.Tests.Csv
         }
 
         [Test]
-        public void ParseAsChar_FieldValueIsInvalid_ThrowsException()
+        public void AsChar_FieldValueIsInvalid_ThrowsException()
         {
             var columnNames = new[] { "Type", "Value" };
             var fields = new[] { "Char", "NotChar" };
@@ -124,7 +135,7 @@ namespace Macaron.Tests.Csv
         }
 
         [Test]
-        public void ParseAsChar_FieldValueIsNullOrEmpty_ReturnsNull()
+        public void AsChar_FieldValueIsNullOrEmpty_ReturnsNull()
         {
             var columnNames = new[] { "Type", "Value" };
             var fields = new[] { "Char", "" };
@@ -136,7 +147,7 @@ namespace Macaron.Tests.Csv
         }
 
         [Test]
-        public void ParseAsDecimal_FieldValueIsValid_ReturnsParsedValue()
+        public void AsDecimal_FieldValueIsValid_ReturnsParsedValue()
         {
             var columnNames = new[] { "Type", "Value" };
             var fields = new[] { "Decimal", decimal.MinValue.ToString() };
@@ -148,7 +159,7 @@ namespace Macaron.Tests.Csv
         }
 
         [Test]
-        public void ParseAsDecimal_FieldValueIsInvalid_ThrowsException()
+        public void AsDecimal_FieldValueIsInvalid_ThrowsException()
         {
             var columnNames = new[] { "Type", "Value" };
             var fields = new[] { "Decimal", "NotNumber" };
@@ -160,7 +171,7 @@ namespace Macaron.Tests.Csv
         }
 
         [Test]
-        public void ParseAsDecimal_StylesAndProviderParamIsValid_UsesForParsing()
+        public void AsDecimal_StylesAndProviderParamIsValid_UsesForParsing()
         {
             var columnNames = new[] { "Type", "Value" };
             var fields = new[] { "Decimal", "$1,000.0" };
@@ -174,7 +185,7 @@ namespace Macaron.Tests.Csv
         }
 
         [Test]
-        public void ParseAsDecimal_FieldValueIsNullOrEmpty_ReturnsNull()
+        public void AsDecimal_FieldValueIsNullOrEmpty_ReturnsNull()
         {
             var columnNames = new[] { "Type", "Value" };
             var fields = new[] { "Decimal", "" };
@@ -186,7 +197,7 @@ namespace Macaron.Tests.Csv
         }
 
         [Test]
-        public void ParseAsDouble_FieldValueIsValid_ReturnsParsedValue()
+        public void AsDouble_FieldValueIsValid_ReturnsParsedValue()
         {
             var columnNames = new[] { "Type", "Value" };
             var fields = new[] { "Double", double.MinValue.ToString("R") };
@@ -198,7 +209,7 @@ namespace Macaron.Tests.Csv
         }
 
         [Test]
-        public void ParseAsDouble_FieldValueIsInvalid_ThrowsException()
+        public void AsDouble_FieldValueIsInvalid_ThrowsException()
         {
             var columnNames = new[] { "Type", "Value" };
             var fields = new[] { "Double", "NotNumber" };
@@ -210,7 +221,7 @@ namespace Macaron.Tests.Csv
         }
 
         [Test]
-        public void ParseAsDouble_StylesAndProviderParamIsValid_UsesForParsing()
+        public void AsDouble_StylesAndProviderParamIsValid_UsesForParsing()
         {
             var columnNames = new[] { "Type", "Value" };
             var fields = new[] { "Double", "$1,000.0" };
@@ -224,7 +235,7 @@ namespace Macaron.Tests.Csv
         }
 
         [Test]
-        public void ParseAsDouble_FieldValueIsNullOrEmpty_ReturnsNull()
+        public void AsDouble_FieldValueIsNullOrEmpty_ReturnsNull()
         {
             var columnNames = new[] { "Type", "Value" };
             var fields = new[] { "Double", "" };
@@ -236,7 +247,7 @@ namespace Macaron.Tests.Csv
         }
 
         [Test]
-        public void ParseAsInt16_FieldValueIsValid_ReturnsParsedValue()
+        public void AsInt16_FieldValueIsValid_ReturnsParsedValue()
         {
             var columnNames = new[] { "Type", "Value" };
             var fields = new[] { "Int16", short.MinValue.ToString() };
@@ -248,7 +259,7 @@ namespace Macaron.Tests.Csv
         }
 
         [Test]
-        public void ParseAsInt16_FieldValueIsInvalid_ThrowsException()
+        public void AsInt16_FieldValueIsInvalid_ThrowsException()
         {
             var columnNames = new[] { "Type", "Value" };
             var fields = new[] { "Int16", "NotNumber" };
@@ -260,7 +271,7 @@ namespace Macaron.Tests.Csv
         }
 
         [Test]
-        public void ParseAsInt16_StylesAndProviderParamIsValid_UsesForParsing()
+        public void AsInt16_StylesAndProviderParamIsValid_UsesForParsing()
         {
             var columnNames = new[] { "Type", "Value" };
             var fields = new[] { "Int16", "$1,000" };
@@ -274,7 +285,7 @@ namespace Macaron.Tests.Csv
         }
 
         [Test]
-        public void ParseAsInt16_FieldValueIsNullOrEmpty_ReturnsNull()
+        public void AsInt16_FieldValueIsNullOrEmpty_ReturnsNull()
         {
             var columnNames = new[] { "Type", "Value" };
             var fields = new[] { "Int16", "" };
@@ -286,7 +297,7 @@ namespace Macaron.Tests.Csv
         }
 
         [Test]
-        public void ParseAsInt32_FieldValueIsValid_ReturnsParsedValue()
+        public void AsInt32_FieldValueIsValid_ReturnsParsedValue()
         {
             var columnNames = new[] { "Type", "Value" };
             var fields = new[] { "Int32", int.MinValue.ToString() };
@@ -298,7 +309,7 @@ namespace Macaron.Tests.Csv
         }
 
         [Test]
-        public void ParseAsInt32_FieldValueIsInvalid_ThrowsException()
+        public void AsInt32_FieldValueIsInvalid_ThrowsException()
         {
             var columnNames = new[] { "Type", "Value" };
             var fields = new[] { "Int32", "NotNumber" };
@@ -310,7 +321,7 @@ namespace Macaron.Tests.Csv
         }
 
         [Test]
-        public void ParseAsInt32_StylesAndProviderParamIsValid_UsesForParsing()
+        public void AsInt32_StylesAndProviderParamIsValid_UsesForParsing()
         {
             var columnNames = new[] { "Type", "Value" };
             var fields = new[] { "Int32", "$1,000" };
@@ -324,7 +335,7 @@ namespace Macaron.Tests.Csv
         }
 
         [Test]
-        public void ParseAsInt32_FieldValueIsNullOrEmpty_ReturnsNull()
+        public void AsInt32_FieldValueIsNullOrEmpty_ReturnsNull()
         {
             var columnNames = new[] { "Type", "Value" };
             var fields = new[] { "Int32", "" };
@@ -336,7 +347,7 @@ namespace Macaron.Tests.Csv
         }
 
         [Test]
-        public void ParseAsInt64_FieldValueIsValid_ReturnsParsedValue()
+        public void AsInt64_FieldValueIsValid_ReturnsParsedValue()
         {
             var columnNames = new[] { "Type", "Value" };
             var fields = new[] { "Int64", long.MinValue.ToString() };
@@ -348,7 +359,7 @@ namespace Macaron.Tests.Csv
         }
 
         [Test]
-        public void ParseAsInt64_FieldValueIsInvalid_ThrowsException()
+        public void AsInt64_FieldValueIsInvalid_ThrowsException()
         {
             var columnNames = new[] { "Type", "Value" };
             var fields = new[] { "Int64", "NotNumber" };
@@ -360,7 +371,7 @@ namespace Macaron.Tests.Csv
         }
 
         [Test]
-        public void ParseAsInt64_StylesAndProviderParamIsValid_UsesForParsing()
+        public void AsInt64_StylesAndProviderParamIsValid_UsesForParsing()
         {
             var columnNames = new[] { "Type", "Value" };
             var fields = new[] { "Int64", "$1,000" };
@@ -374,7 +385,7 @@ namespace Macaron.Tests.Csv
         }
 
         [Test]
-        public void ParseAsInt64_FieldValueIsNullOrEmpty_ReturnsNull()
+        public void AsInt64_FieldValueIsNullOrEmpty_ReturnsNull()
         {
             var columnNames = new[] { "Type", "Value" };
             var fields = new[] { "Int64", "" };
@@ -386,7 +397,7 @@ namespace Macaron.Tests.Csv
         }
 
         [Test]
-        public void ParseAsSByte_FieldValueIsValid_ReturnsParsedValue()
+        public void AsSByte_FieldValueIsValid_ReturnsParsedValue()
         {
             var columnNames = new[] { "Type", "Value" };
             var fields = new[] { "SByte", byte.MinValue.ToString() };
@@ -398,7 +409,7 @@ namespace Macaron.Tests.Csv
         }
 
         [Test]
-        public void ParseAsSByte_FieldValueIsInvalid_ThrowsException()
+        public void AsSByte_FieldValueIsInvalid_ThrowsException()
         {
             var columnNames = new[] { "Type", "Value" };
             var fields = new[] { "SByte", "NotNumber" };
@@ -410,7 +421,7 @@ namespace Macaron.Tests.Csv
         }
 
         [Test]
-        public void ParseAsSByte_StylesAndProviderParamIsValid_UsesForParsing()
+        public void AsSByte_StylesAndProviderParamIsValid_UsesForParsing()
         {
             var columnNames = new[] { "Type", "Value" };
             var fields = new[] { "SByte", "$100" };
@@ -424,7 +435,7 @@ namespace Macaron.Tests.Csv
         }
 
         [Test]
-        public void ParseAsSByte_FieldValueIsNullOrEmpty_ReturnsNull()
+        public void AsSByte_FieldValueIsNullOrEmpty_ReturnsNull()
         {
             var columnNames = new[] { "Type", "Value" };
             var fields = new[] { "SByte", "" };
@@ -436,7 +447,7 @@ namespace Macaron.Tests.Csv
         }
 
         [Test]
-        public void ParseAsSingle_FieldValueIsValid_ReturnsParsedValue()
+        public void AsSingle_FieldValueIsValid_ReturnsParsedValue()
         {
             var columnNames = new[] { "Type", "Value" };
             var fields = new[] { "Single", float.MinValue.ToString("R") };
@@ -448,7 +459,7 @@ namespace Macaron.Tests.Csv
         }
 
         [Test]
-        public void ParseAsSingle_FieldValueIsInvalid_ThrowsException()
+        public void AsSingle_FieldValueIsInvalid_ThrowsException()
         {
             var columnNames = new[] { "Type", "Value" };
             var fields = new[] { "Single", "NotNumber" };
@@ -460,7 +471,7 @@ namespace Macaron.Tests.Csv
         }
 
         [Test]
-        public void ParseAsSingle_StylesAndProviderParamIsValid_UsesForParsing()
+        public void AsSingle_StylesAndProviderParamIsValid_UsesForParsing()
         {
             var columnNames = new[] { "Type", "Value" };
             var fields = new[] { "Single", "$1,000.0" };
@@ -474,7 +485,7 @@ namespace Macaron.Tests.Csv
         }
 
         [Test]
-        public void ParseAsSingle_FieldValueIsNullOrEmpty_ReturnsNull()
+        public void AsSingle_FieldValueIsNullOrEmpty_ReturnsNull()
         {
             var columnNames = new[] { "Type", "Value" };
             var fields = new[] { "Single", "" };
@@ -486,7 +497,7 @@ namespace Macaron.Tests.Csv
         }
 
         [Test]
-        public void ParseAsUInt16_FieldValueIsValid_ReturnsParsedValue()
+        public void AsUInt16_FieldValueIsValid_ReturnsParsedValue()
         {
             var columnNames = new[] { "Type", "Value" };
             var fields = new[] { "UInt16", ushort.MaxValue.ToString() };
@@ -498,7 +509,7 @@ namespace Macaron.Tests.Csv
         }
 
         [Test]
-        public void ParseAsUInt16_FieldValueIsInvalid_ThrowsException()
+        public void AsUInt16_FieldValueIsInvalid_ThrowsException()
         {
             var columnNames = new[] { "Type", "Value" };
             var fields = new[] { "UInt16", "NotNumber" };
@@ -510,7 +521,7 @@ namespace Macaron.Tests.Csv
         }
 
         [Test]
-        public void ParseAsUInt16_StylesAndProviderParamIsValid_UsesForParsing()
+        public void AsUInt16_StylesAndProviderParamIsValid_UsesForParsing()
         {
             var columnNames = new[] { "Type", "Value" };
             var fields = new[] { "UInt16", "$1,000" };
@@ -524,7 +535,7 @@ namespace Macaron.Tests.Csv
         }
 
         [Test]
-        public void ParseAsUInt16_FieldValueIsNullOrEmpty_ReturnsNull()
+        public void AsUInt16_FieldValueIsNullOrEmpty_ReturnsNull()
         {
             var columnNames = new[] { "Type", "Value" };
             var fields = new[] { "UInt16", "" };
@@ -536,7 +547,7 @@ namespace Macaron.Tests.Csv
         }
 
         [Test]
-        public void ParseAsUInt32_FieldValueIsValid_ReturnsParsedValue()
+        public void AsUInt32_FieldValueIsValid_ReturnsParsedValue()
         {
             var columnNames = new[] { "Type", "Value" };
             var fields = new[] { "UInt32", uint.MaxValue.ToString() };
@@ -548,7 +559,7 @@ namespace Macaron.Tests.Csv
         }
 
         [Test]
-        public void ParseAsUInt32_FieldValueIsInvalid_ThrowsException()
+        public void AsUInt32_FieldValueIsInvalid_ThrowsException()
         {
             var columnNames = new[] { "Type", "Value" };
             var fields = new[] { "UInt32", "NotNumber" };
@@ -560,7 +571,7 @@ namespace Macaron.Tests.Csv
         }
 
         [Test]
-        public void ParseAsUInt32_StylesAndProviderParamIsValid_UsesForParsing()
+        public void AsUInt32_StylesAndProviderParamIsValid_UsesForParsing()
         {
             var columnNames = new[] { "Type", "Value" };
             var fields = new[] { "UInt32", "$1,000" };
@@ -574,7 +585,7 @@ namespace Macaron.Tests.Csv
         }
 
         [Test]
-        public void ParseAsUInt32_FieldValueIsNullOrEmpty_ReturnsNull()
+        public void AsUInt32_FieldValueIsNullOrEmpty_ReturnsNull()
         {
             var columnNames = new[] { "Type", "Value" };
             var fields = new[] { "UInt32", "" };
@@ -586,7 +597,7 @@ namespace Macaron.Tests.Csv
         }
 
         [Test]
-        public void ParseAsUInt64_FieldValueIsValid_ReturnsParsedValue()
+        public void AsUInt64_FieldValueIsValid_ReturnsParsedValue()
         {
             var columnNames = new[] { "Type", "Value" };
             var fields = new[] { "UInt64", ulong.MaxValue.ToString() };
@@ -598,7 +609,7 @@ namespace Macaron.Tests.Csv
         }
 
         [Test]
-        public void ParseAsUInt64_FieldValueIsInvalid_ThrowsException()
+        public void AsUInt64_FieldValueIsInvalid_ThrowsException()
         {
             var columnNames = new[] { "Type", "Value" };
             var fields = new[] { "UInt64", "NotNumber" };
@@ -610,7 +621,7 @@ namespace Macaron.Tests.Csv
         }
 
         [Test]
-        public void ParseAsUInt64_StylesAndProviderParamIsValid_UsesForParsing()
+        public void AsUInt64_StylesAndProviderParamIsValid_UsesForParsing()
         {
             var columnNames = new[] { "Type", "Value" };
             var fields = new[] { "UInt64", "$1,000" };
@@ -624,7 +635,7 @@ namespace Macaron.Tests.Csv
         }
 
         [Test]
-        public void ParseAsUInt64_FieldValueIsNullOrEmpty_ReturnsNull()
+        public void AsUInt64_FieldValueIsNullOrEmpty_ReturnsNull()
         {
             var columnNames = new[] { "Type", "Value" };
             var fields = new[] { "UInt64", "" };
@@ -636,7 +647,7 @@ namespace Macaron.Tests.Csv
         }
 
         [Test]
-        public void ParseAsEnum_FieldValueIsValid_ReturnsParsedValue()
+        public void AsEnum_FieldValueIsValid_ReturnsParsedValue()
         {
             var columnNames = new[] { "Type", "Value" };
             var fields = new[] { "NumberStyles", "Float, AllowThousands" };
@@ -648,7 +659,7 @@ namespace Macaron.Tests.Csv
         }
 
         [Test]
-        public void ParseAsEnum_FieldValueIsInvalid_ThrowsException()
+        public void AsEnum_FieldValueIsInvalid_ThrowsException()
         {
             var columnNames = new[] { "Type", "Value" };
             var fields = new[] { "NumberStyles", "NotNumberStyles" };
@@ -660,7 +671,7 @@ namespace Macaron.Tests.Csv
         }
 
         [Test]
-        public void ParseAsEnum_IgnoreCaseParamIsTrue_AllowsLowerCaseValue()
+        public void AsEnum_IgnoreCaseParamIsTrue_AllowsLowerCaseValue()
         {
             var columnNames = new[] { "Type", "Value" };
             var fields = new[] { "NumberStyles", "float, allowthousands" };
@@ -672,7 +683,7 @@ namespace Macaron.Tests.Csv
         }
 
         [Test]
-        public void ParseAsEnum_FieldValueIsNullOrEmpty_ReturnsNull()
+        public void AsEnum_FieldValueIsNullOrEmpty_ReturnsNull()
         {
             var columnNames = new[] { "Type", "Value" };
             var fields = new[] { "NumberStyles", "" };
@@ -684,7 +695,7 @@ namespace Macaron.Tests.Csv
         }
 
         [Test]
-        public void ParseAsDateTime_FieldValueIsValid_ReturnsParsedValue()
+        public void AsDateTime_FieldValueIsValid_ReturnsParsedValue()
         {
             var columnNames = new[] { "Type", "Value" };
             var fields = new[] { "DateTime", "Thu, 01 May 2008 07:34:42" };
@@ -696,7 +707,7 @@ namespace Macaron.Tests.Csv
         }
 
         [Test]
-        public void ParseAsDateTime_FormatParamIsValid_UsesForParsing()
+        public void AsDateTime_FormatParamIsValid_UsesForParsing()
         {
             var columnNames = new[] { "Type", "Value" };
             var fields = new[] { "DateTime", "06/15/2008" };
@@ -708,7 +719,7 @@ namespace Macaron.Tests.Csv
         }
 
         [Test]
-        public void ParseAsDateTime_FormatsParamIsValid_UsesForParsing()
+        public void AsDateTime_FormatsParamIsValid_UsesForParsing()
         {
             var columnNames = new[] { "Type", "Value" };
             var fields = new[] { "DateTime", "2009-06-15T13:45:30.0000000Z" };
@@ -723,7 +734,7 @@ namespace Macaron.Tests.Csv
         }
 
         [Test]
-        public void ParseAsDateTime_FieldValueIsInvalid_ThrowsException()
+        public void AsDateTime_FieldValueIsInvalid_ThrowsException()
         {
             var columnNames = new[] { "Type", "Value" };
             var fields = new[] { "DateTime", "NotDateTime" };
@@ -735,7 +746,7 @@ namespace Macaron.Tests.Csv
         }
 
         [Test]
-        public void ParseAsDateTime_FieldValueIsNullOrEmpty_ReturnsNull()
+        public void AsDateTime_FieldValueIsNullOrEmpty_ReturnsNull()
         {
             var columnNames = new[] { "Type", "Value" };
             var fields = new[] { "DateTime", "" };
@@ -747,7 +758,7 @@ namespace Macaron.Tests.Csv
         }
 
         [Test]
-        public void ParseAsTimeSpan_FieldValueIsValid_ResturnsParsedValue()
+        public void AsTimeSpan_FieldValueIsValid_ResturnsParsedValue()
         {
             var columnNames = new[] { "Type", "Value" };
             var fields = new[] { "TimeSpan", "6.12:14:45.348" };
@@ -759,7 +770,7 @@ namespace Macaron.Tests.Csv
         }
 
         [Test]
-        public void ParseAsTimeSpan_FieldValueIsInvalid_ThrowsException()
+        public void AsTimeSpan_FieldValueIsInvalid_ThrowsException()
         {
             var columnNames = new[] { "Type", "Value" };
             var fields = new[] { "TimeSpan", "NotTimeSpan" };
@@ -771,7 +782,7 @@ namespace Macaron.Tests.Csv
         }
 
         [Test]
-        public void ParseAsTimeSpan_FieldValueIsNullOrEmpty_ResturnsDefaultValue()
+        public void AsTimeSpan_FieldValueIsNullOrEmpty_ResturnsDefaultValue()
         {
             var columnNames = new[] { "Type", "Value" };
             var fields = new[] { "TimeSpan", "" };
@@ -784,7 +795,7 @@ namespace Macaron.Tests.Csv
 
 #if UNITY_5_6_OR_NEWER && !NET_2_0 && !NET_2_0_SUBSET
         [Test]
-        public void ParseAsTimeSpan_FormatParamIsValid_UsesForParsing()
+        public void AsTimeSpan_FormatParamIsValid_UsesForParsing()
         {
             var columnNames = new[] { "Type", "Value" };
             var fields = new[] { "TimeSpan", "17:14:48" };
@@ -798,7 +809,7 @@ namespace Macaron.Tests.Csv
         }
 
         [Test]
-        public void ParseAsTimeSpan_FormatsParamIsValid_UsesForParsing()
+        public void AsTimeSpan_FormatsParamIsValid_UsesForParsing()
         {
             var columnNames = new[] { "Type", "Value" };
             var fields = new[] { "TimeSpan", "17:14" };
@@ -813,7 +824,7 @@ namespace Macaron.Tests.Csv
 #endif
 
         [Test]
-        public void ParseAsDateTimeOffset_FieldValueIsValid_ReturnsParsedValue()
+        public void AsDateTimeOffset_FieldValueIsValid_ReturnsParsedValue()
         {
             var columnNames = new[] { "Type", "Value" };
             var fields = new[] { "DateTimeOffset", "Thu, 01 May 2008 07:34:42" };
@@ -825,7 +836,7 @@ namespace Macaron.Tests.Csv
         }
 
         [Test]
-        public void ParseAsDateTimeOffset_FormatParamIsValid_UsesForParsing()
+        public void AsDateTimeOffset_FormatParamIsValid_UsesForParsing()
         {
             var columnNames = new[] { "Type", "Value" };
             var fields = new[] { "DateTimeOffset", "06/15/2008" };
@@ -840,7 +851,7 @@ namespace Macaron.Tests.Csv
         }
 
         [Test]
-        public void ParseAsDateTimeOffset_FormatsParamIsValid_UsesForParsing()
+        public void AsDateTimeOffset_FormatsParamIsValid_UsesForParsing()
         {
             var columnNames = new[] { "Type", "Value" };
             var fields = new[] { "DateTimeOffset", "Sun 15 Jun 2008 8:30 AM -06:00" };
@@ -854,7 +865,7 @@ namespace Macaron.Tests.Csv
         }
 
         [Test]
-        public void ParseAsDateTimeOffset_FieldValueIsInvalid_ThrowsException()
+        public void AsDateTimeOffset_FieldValueIsInvalid_ThrowsException()
         {
             var columnNames = new[] { "Type", "Value" };
             var fields = new[] { "DateTimeOffset", "NotDateTimeOffset" };
@@ -866,7 +877,7 @@ namespace Macaron.Tests.Csv
         }
 
         [Test]
-        public void ParseAsDateTimeOffset_FieldValueIsNullOrEmpty_ReturnsNull()
+        public void AsDateTimeOffset_FieldValueIsNullOrEmpty_ReturnsNull()
         {
             var columnNames = new[] { "Type", "Value" };
             var fields = new[] { "DateTimeOffset", "" };
@@ -878,7 +889,7 @@ namespace Macaron.Tests.Csv
         }
 
         [Test]
-        public void ParseAsGuid_FieldValueIsValid_ReturnsParsedValue()
+        public void AsGuid_FieldValueIsValid_ReturnsParsedValue()
         {
             var columnNames = new[] { "Type", "Value" };
             var fields = new[] { "Guid", "1fe528d8-d5e8-4060-b5f9-1608702bd56f" };
@@ -891,7 +902,7 @@ namespace Macaron.Tests.Csv
 
 #if UNITY_5_6_OR_NEWER && !NET_2_0 && !NET_2_0_SUBSET
         [Test]
-        public void ParseAsGuid_FormatParamIsValid_UsesForParsing()
+        public void AsGuid_FormatParamIsValid_UsesForParsing()
         {
             var columnNames = new[] { "Type", "Value" };
             var fields = new[] { "Guid", "{0xCA761232,0xED42,0x11CE,{0xBA,0xCD,0x00,0xAA,0x00,0x57,0xB2,0x23}}" };
@@ -904,7 +915,7 @@ namespace Macaron.Tests.Csv
 #endif
 
         [Test]
-        public void ParseAsGuid_FieldValueIsInvalid_ThrowsException()
+        public void AsGuid_FieldValueIsInvalid_ThrowsException()
         {
             var columnNames = new[] { "Type", "Value" };
             var fields = new[] { "Guid", "NotGuid" };
@@ -916,7 +927,7 @@ namespace Macaron.Tests.Csv
         }
 
         [Test]
-        public void ParseAsGuid_FieldValueIsNullOrEmpty_ReturnsNull()
+        public void AsGuid_FieldValueIsNullOrEmpty_ReturnsNull()
         {
             var columnNames = new[] { "Type", "Value" };
             var fields = new[] { "Guid", "" };
@@ -928,7 +939,7 @@ namespace Macaron.Tests.Csv
         }
 
         [Test]
-        public void ParseAsUri_FieldValueIsValid_ReturnsParsedValue()
+        public void AsUri_FieldValueIsValid_ReturnsParsedValue()
         {
             var uri = "abc://username:password@example.com:123/path/data?key=value&key2=value2#fragid1";
             var columnNames = new[] { "Type", "Value" };
@@ -941,7 +952,7 @@ namespace Macaron.Tests.Csv
         }
 
         [Test]
-        public void ParseAsUri_FieldValueIsInvalid_ThrowsException()
+        public void AsUri_FieldValueIsInvalid_ThrowsException()
         {
             var columnNames = new[] { "Type", "Value" };
             var fields = new[] { "Uri", "NotUri" };
@@ -953,7 +964,7 @@ namespace Macaron.Tests.Csv
         }
 
         [Test]
-        public void ParseAsUri_FormatParamIsValid_UsesForParsing()
+        public void AsUri_FormatParamIsValid_UsesForParsing()
         {
             var uri = "/index.html";
             var columnNames = new[] { "Type", "Value" };
@@ -966,7 +977,7 @@ namespace Macaron.Tests.Csv
         }
 
         [Test]
-        public void ParseAsUri_FieldValueIsNullOrEmpty_ReturnsNull()
+        public void AsUri_FieldValueIsNullOrEmpty_ReturnsNull()
         {
             var columnNames = new[] { "Type", "Value" };
             var fields = new[] { "Uri", "" };
