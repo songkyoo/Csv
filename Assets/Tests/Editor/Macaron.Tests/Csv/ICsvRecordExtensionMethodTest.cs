@@ -2,6 +2,7 @@ using System;
 using System.Globalization;
 using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
+using System.Text.RegularExpressions;
 using NUnit.Framework;
 using Macaron.Csv;
 using Macaron.Csv.Internal;
@@ -974,6 +975,58 @@ namespace Macaron.Tests.Csv
             var result = record.Parse("Value").AsUri();
 
             Assert.That(result, Null);
+        }
+
+        [Test]
+        public void Split_RegexSeparatorParamIsValid_ReturnsFields()
+        {
+            var fields = new[] { "AWP, WA 2000, PSG1" };
+            var record = CreateRecord(1, fields);
+
+            var pattern = new Regex(@",\s*");
+            var results = record.Parse(0).Split(pattern);
+
+            var field0 = new ICsvRecordExtensionMethod.Field(1, "A", "AWP");
+            var field1 = new ICsvRecordExtensionMethod.Field(1, "A", "WA 2000");
+            var field2 = new ICsvRecordExtensionMethod.Field(1, "A", "PSG1");
+
+            Assert.That(results, EqualTo(new [] { field0, field1, field2 }));
+        }
+
+        [Test]
+        public void Split_StringSeparatorParamIsValid_ReturnsFields()
+        {
+            var fields = new[] { "AWP, WA 2000, PSG1" };
+            var record = CreateRecord(1, fields);
+
+            var results = record.Parse(0).Split(", ");
+
+            var field0 = new ICsvRecordExtensionMethod.Field(1, "A", "AWP");
+            var field1 = new ICsvRecordExtensionMethod.Field(1, "A", "WA 2000");
+            var field2 = new ICsvRecordExtensionMethod.Field(1, "A", "PSG1");
+
+            Assert.That(results, EqualTo(new [] { field0, field1, field2 }));
+        }
+
+        [Test]
+        public void Split_CharSeparatorParamIsValid_ReturnsFields()
+        {
+            var fields = new[] { "AWP,WA 2000,PSG1" };
+            var record = CreateRecord(1, fields);
+
+            var results = record.Parse(0).Split(',');
+
+            var field0 = new ICsvRecordExtensionMethod.Field(1, "A", "AWP");
+            var field1 = new ICsvRecordExtensionMethod.Field(1, "A", "WA 2000");
+            var field2 = new ICsvRecordExtensionMethod.Field(1, "A", "PSG1");
+
+            Assert.That(results, EqualTo(new [] { field0, field1, field2 }));
+        }
+
+        private ICsvRecord<int> CreateRecord(int recordNumber, string[] fields)
+        {
+            var header = new IndexHeader(fields.Length);
+            return new Record<int>(header, recordNumber, fields);
         }
 
         private ICsvRecord<string> CreateRecord(string[] columnNames, int recordNumber, string[] fields)

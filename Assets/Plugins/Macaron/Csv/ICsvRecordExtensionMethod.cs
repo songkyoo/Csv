@@ -1,5 +1,7 @@
 using System;
+using System.Collections.Generic;
 using System.Globalization;
+using System.Text.RegularExpressions;
 
 namespace Macaron.Csv
 {
@@ -8,7 +10,7 @@ namespace Macaron.Csv
         /// <summary>
         /// 필드와 관련된 정보를 가지는 구조체.
         /// </summary>
-        public struct Field
+        public struct Field : IEquatable<Field>
         {
             /// <summary>
             /// 필드가 속한 레코드 번호.
@@ -31,7 +33,57 @@ namespace Macaron.Csv
                 ColumnName = columnName;
                 Value = value;
             }
+
+            #region Operators
+            public static bool operator ==(Field lhs, Field rhs)
+            {
+                return lhs.Equals(rhs);
+            }
+
+            public static bool operator !=(Field lhs, Field rhs)
+            {
+                return !(lhs == rhs);
+            }
+            #endregion
+
+            #region Overrides
+            public override bool Equals(object obj)
+            {
+                if (obj is Field)
+                {
+                    return Equals((Field)obj);
+                }
+
+                return false;
+            }
+
+            public override int GetHashCode()
+            {
+                var h1 = RecordNumber;
+                var h2 = ColumnName != null ? ColumnName.GetHashCode() : 0;
+                var h3 = Value != null ? Value.GetHashCode() : 0;
+
+                unchecked
+                {
+                    var result = 0;
+                    result = (result * 397) ^ h1;
+                    result = (result * 397) ^ h2;
+                    result = (result * 397) ^ h3;
+
+                    return result;
+                }
+            }
+            #endregion
+
+            #region Implementation of IEquatable<Field>
+            public bool Equals(Field other)
+            {
+                return RecordNumber == other.RecordNumber && ColumnName == other.ColumnName && Value == other.Value;
+            }
+            #endregion
         }
+
+        private static readonly Field[] EmptyFields = new Field[0];
 
         /// <summary>
         /// 지정한 열 이름의 필드값을 이용해 <see cref="Field"/> 개체를 생성한다.
@@ -51,6 +103,126 @@ namespace Macaron.Csv
             }
 
             return new Field(record.RecordNumber, header[index], record[index]);
+        }
+
+        /// <summary>
+        /// <see cref="Field.Value"/>값을 <paramref name="pattern"/>으로 분할하여 새로운 <see cref="Field"/> 배열을 반환한다.
+        /// </summary>
+        /// <param name="pattern">분할 기준이되는 정규표현식.</param>
+        /// <returns><paramref name="pattern"/>으로 분할된 <see cref="Field.Value"/>값을 가지는 <see cref="Field"/> 배열.</returns>
+        /// <exception cref="ArgumentNullException"><paramref name="pattern"/>이 <c>null</c>인 경우.</exception>
+        public static Field[] Split(this Field field, Regex pattern)
+        {
+            if (pattern == null)
+            {
+                throw new ArgumentNullException("pattern");
+            }
+
+            var value = field.Value;
+
+            if (string.IsNullOrEmpty(value))
+            {
+                return EmptyFields;
+            }
+
+            var values = pattern.Split(value);
+            var results = new Field[values.Length];
+
+            for (int i = 0; i < values.Length; ++i)
+            {
+                results[i] = new Field(field.RecordNumber, field.ColumnName, values[i]);
+            }
+
+            return results;
+        }
+
+        /// <summary>
+        /// <see cref="Field.Value"/>값을 <paramref name="separator"/>로 분할하여 새로운 <see cref="Field"/> 배열을 반환한다.
+        /// </summary>
+        /// <param name="separator">분할 기준이되는 문자열.</param>
+        /// <returns><paramref name="separator"/>로 분할된 <see cref="Field.Value"/>값을 가지는 <see cref="Field"/> 배열.</returns>
+        public static Field[] Split(this Field field, string separator)
+        {
+            var value = field.Value;
+
+            if (string.IsNullOrEmpty(value))
+            {
+                return EmptyFields;
+            }
+
+            if (string.IsNullOrEmpty(separator))
+            {
+                return new[] { field };
+            }
+
+            var startIndex = 0;
+            var endIndex = value.IndexOf(separator[0]);
+            var lastIndex = value.Length - separator.Length;
+
+            if (endIndex == -1 || endIndex > lastIndex)
+            {
+                return new[] { field };
+            }
+
+            var results = new List<Field>();
+
+            while (endIndex != -1 && endIndex <= lastIndex)
+            {
+                if (string.CompareOrdinal(value, endIndex, separator, 0, separator.Length) == 0)
+                {
+                    results.Add(new Field(
+                        field.RecordNumber,
+                        field.ColumnName,
+                        value.Substring(startIndex, endIndex - startIndex)));
+                    endIndex += separator.Length;
+                    startIndex = endIndex;
+                }
+
+                endIndex = value.IndexOf(separator[0], endIndex);
+            }
+
+            results.Add(new Field(field.RecordNumber, field.ColumnName, value.Substring(startIndex)));
+
+            return results.ToArray();
+        }
+
+        /// <summary>
+        /// <see cref="Field.Value"/>값을 <paramref name="separator"/>로 분할하여 새로운 <see cref="Field"/> 배열을 반환한다.
+        /// </summary>
+        /// <param name="separator">분할 기준이되는 문자.</param>
+        /// <returns><paramref name="separator"/>로 분할된 <see cref="Field.Value"/>값을 가지는 <see cref="Field"/> 배열.</returns>
+        public static Field[] Split(this Field field, char separator)
+        {
+            var value = field.Value;
+
+            if (string.IsNullOrEmpty(value))
+            {
+                return EmptyFields;
+            }
+
+            var startIndex = 0;
+            var endIndex = value.IndexOf(separator);
+
+            if (endIndex == -1)
+            {
+                return new[] { field };
+            }
+
+            var results = new List<Field>();
+
+            while (endIndex != -1)
+            {
+                results.Add(new Field(
+                    field.RecordNumber,
+                    field.ColumnName,
+                    value.Substring(startIndex, endIndex - startIndex)));
+                startIndex = endIndex + 1;
+                endIndex = value.IndexOf(separator, startIndex);
+            }
+
+            results.Add(new Field(field.RecordNumber, field.ColumnName, value.Substring(startIndex)));
+
+            return results.ToArray();
         }
 
         /// <summary>
