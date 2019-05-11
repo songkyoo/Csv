@@ -65,23 +65,24 @@ namespace Macaron.Tests.Csv.Internal.Headers
         }
 
         [Test]
-        public void GetIndex_ColumnNameParamIsNull_ThrowsException()
-        {
-            var columnNames = new[] { "Manufacturer", "Name" };
-            var header = new DictHeader(columnNames, null);
-
-            Assert.Throws(
-                TypeOf<ArgumentNullException>().And.Property("ParamName").EqualTo("columnName"),
-                () => header.GetIndex(null));
-        }
-
-        [Test]
         public void GetIndex_HeaderContainsColumnNameParam_ReturnsColumnIndex()
         {
             var columnNames = new[] { "Manufacturer", "Name" };
             var header = new DictHeader(columnNames, null);
 
             Assert.That(header.GetIndex("Name"), EqualTo(1));
+        }
+
+        [TestCase(null)]
+        [TestCase("")]
+        public void GetIndex_ColumnNameParamIsNullOrEmpty_ReturnsMinusOne(string columnName)
+        {
+            var columnNames = new[] { "Manufacturer", "" };
+            var header = new DictHeader(columnNames, null);
+
+            var index = header.GetIndex(columnName);
+
+            Assert.That(index, EqualTo(-1));
         }
 
         [Test]

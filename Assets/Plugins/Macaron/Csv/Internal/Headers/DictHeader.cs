@@ -84,9 +84,9 @@ namespace Macaron.Csv.Internal.Headers
 
         public int GetIndex(string columnName)
         {
-            if (columnName == null)
+            if (string.IsNullOrEmpty(columnName))
             {
-                throw new ArgumentNullException("columnName");
+                return -1;
             }
 
             int index;
