@@ -25,6 +25,83 @@ namespace Macaron.Tests.Csv
         }
 
         [Test]
+        public void Parse_ColumnNameParamIsInvalid_ThrowsException()
+        {
+            var record = CreateRecord(new[] { "ColumnName" }, 1, new[] { "Value" });
+
+            Assert.Throws(
+                TypeOf<ArgumentException>().And.Property("ParamName").EqualTo("columnName"),
+                () => record.Parse("InvalidColumnName"));
+        }
+
+        [Test]
+        public void Parse_ColumnNamesParamIsValid_ReturnsFields2()
+        {
+            var recordNumber = 1;
+            var columnNames = new[] { "ColumnName1", "ColumnName2" };
+            var fields = new[] { "Value1", "Value2" };
+            var record = CreateRecord(columnNames, recordNumber, fields);
+
+            var result = record.Parse(columnNames[0], columnNames[1]);
+
+            var field1 = new ICsvRecordExtensionMethod.Field(recordNumber, columnNames[0], fields[0]);
+            var field2 = new ICsvRecordExtensionMethod.Field(recordNumber, columnNames[1], fields[1]);
+
+            Assert.That(result, EqualTo(new[] { field1, field2 }));
+        }
+
+        [Test]
+        public void Parse_ColumnNamesParamIsValid_ReturnsFields3()
+        {
+            var recordNumber = 1;
+            var columnNames = new[] { "ColumnName1", "ColumnName2", "ColumnName3" };
+            var fields = new[] { "Value1", "Value2", "Value3" };
+            var record = CreateRecord(columnNames, recordNumber, fields);
+
+            var result = record.Parse(columnNames[0], columnNames[1], columnNames[2]);
+
+            var field1 = new ICsvRecordExtensionMethod.Field(recordNumber, columnNames[0], fields[0]);
+            var field2 = new ICsvRecordExtensionMethod.Field(recordNumber, columnNames[1], fields[1]);
+            var field3 = new ICsvRecordExtensionMethod.Field(recordNumber, columnNames[2], fields[2]);
+
+            Assert.That(result, EqualTo(new[] { field1, field2, field3 }));
+        }
+
+        [Test]
+        public void Parse_ColumnNamesParamIsValid_ReturnsFields4()
+        {
+            var recordNumber = 1;
+            var columnNames = new[] { "ColumnName1", "ColumnName2", "ColumnName3", "ColumnName4" };
+            var fields = new[] { "Value1", "Value2", "Value3", "Value4" };
+            var record = CreateRecord(columnNames, recordNumber, fields);
+
+            var result = record.Parse(columnNames[0], columnNames[1], columnNames[2], columnNames[3]);
+
+            var field1 = new ICsvRecordExtensionMethod.Field(recordNumber, columnNames[0], fields[0]);
+            var field2 = new ICsvRecordExtensionMethod.Field(recordNumber, columnNames[1], fields[1]);
+            var field3 = new ICsvRecordExtensionMethod.Field(recordNumber, columnNames[2], fields[2]);
+            var field4 = new ICsvRecordExtensionMethod.Field(recordNumber, columnNames[3], fields[3]);
+
+            Assert.That(result, EqualTo(new[] { field1, field2, field3, field4 }));
+        }
+
+        [Test]
+        public void Parse_ColumnNamesParamIsValid_ReturnsFields()
+        {
+            var recordNumber = 1;
+            var columnNames = new[] { "ColumnName1", "ColumnName2" };
+            var fields = new[] { "Value1", "Value2" };
+            var record = CreateRecord(columnNames, recordNumber, fields);
+
+            var result = record.Parse(columnNames);
+
+            var field1 = new ICsvRecordExtensionMethod.Field(recordNumber, columnNames[0], fields[0]);
+            var field2 = new ICsvRecordExtensionMethod.Field(recordNumber, columnNames[1], fields[1]);
+
+            Assert.That(result, EqualTo(new[] { field1, field2 }));
+        }
+
+        [Test]
         public void AsBoolean_FieldValueIsValid_ReturnsParsedValue()
         {
             var columnNames = new[] { "Type", "Value" };
@@ -995,13 +1072,13 @@ namespace Macaron.Tests.Csv
             var record = CreateRecord(1, fields);
 
             var pattern = new Regex(@",\s*");
-            var results = record.Parse(0).Split(pattern);
+            var result = record.Parse(0).Split(pattern);
 
             var field0 = new ICsvRecordExtensionMethod.Field(1, "A", "AWP");
             var field1 = new ICsvRecordExtensionMethod.Field(1, "A", "WA 2000");
             var field2 = new ICsvRecordExtensionMethod.Field(1, "A", "PSG1");
 
-            Assert.That(results, EqualTo(new [] { field0, field1, field2 }));
+            Assert.That(result, EqualTo(new [] { field0, field1, field2 }));
         }
 
         [Test]
@@ -1010,13 +1087,13 @@ namespace Macaron.Tests.Csv
             var fields = new[] { "AWP, WA 2000, PSG1" };
             var record = CreateRecord(1, fields);
 
-            var results = record.Parse(0).Split(", ");
+            var result = record.Parse(0).Split(", ");
 
             var field0 = new ICsvRecordExtensionMethod.Field(1, "A", "AWP");
             var field1 = new ICsvRecordExtensionMethod.Field(1, "A", "WA 2000");
             var field2 = new ICsvRecordExtensionMethod.Field(1, "A", "PSG1");
 
-            Assert.That(results, EqualTo(new [] { field0, field1, field2 }));
+            Assert.That(result, EqualTo(new [] { field0, field1, field2 }));
         }
 
         [Test]
@@ -1025,13 +1102,13 @@ namespace Macaron.Tests.Csv
             var fields = new[] { "AWP,WA 2000,PSG1" };
             var record = CreateRecord(1, fields);
 
-            var results = record.Parse(0).Split(',');
+            var result = record.Parse(0).Split(',');
 
             var field0 = new ICsvRecordExtensionMethod.Field(1, "A", "AWP");
             var field1 = new ICsvRecordExtensionMethod.Field(1, "A", "WA 2000");
             var field2 = new ICsvRecordExtensionMethod.Field(1, "A", "PSG1");
 
-            Assert.That(results, EqualTo(new [] { field0, field1, field2 }));
+            Assert.That(result, EqualTo(new [] { field0, field1, field2 }));
         }
 
         private ICsvRecord<int> CreateRecord(int recordNumber, string[] fields)

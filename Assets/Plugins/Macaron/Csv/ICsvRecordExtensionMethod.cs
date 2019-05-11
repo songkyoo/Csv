@@ -95,14 +95,167 @@ namespace Macaron.Csv
         public static Field Parse<T>(this ICsvRecord<T> record, T columnName)
         {
             var header = record.Header;
-            int index = header.GetIndex(columnName);
+            var index = header.GetIndex(columnName);
 
             if (index == -1)
             {
-                throw new ArgumentException(columnName + "은 유효한 열 이름이 아닙니다.", "columnName");
+                throw new ArgumentException("유효한 열 이름이 아닙니다.", "columnName");
             }
 
             return new Field(record.RecordNumber, header[index], record[index]);
+        }
+
+        /// <summary>
+        /// 지정한 열 이름 목록의 필드값을 이용해 <see cref="Field"/> 배열을 생성한다.
+        /// </summary>
+        /// <param name="columnName1">첫 번째 열 이름.</param>
+        /// <param name="columnName2">두 번째 열 이름.</param>
+        /// <typeparam name="T">열 이름 형식.</typeparam>
+        /// <returns>지정한 열 이름 목록의 필드와 관련된 정보를 가지는 <see cref="Field"/> 배열.</returns>
+        /// <exception cref="ArgumentException">레코드에서 <paramref name="columnName1"/>으로 필드를 찾을 수 없는 경우.</exception>
+        /// <exception cref="ArgumentException">레코드에서 <paramref name="columnName2"/>으로 필드를 찾을 수 없는 경우.</exception>
+        public static Field[] Parse<T>(this ICsvRecord<T> record, T columnName1, T columnName2)
+        {
+            var header = record.Header;
+            var index1 = header.GetIndex(columnName1);
+
+            if (index1 == -1)
+            {
+                throw new ArgumentException("유효한 열 이름이 아닙니다.", "columnName1");
+            }
+
+            var index2 = header.GetIndex(columnName2);
+
+            if (index2 == -1)
+            {
+                throw new ArgumentException("유효한 열 이름이 아닙니다.", "columnName2");
+            }
+
+            var field1 = new Field(record.RecordNumber, header[index1], record[index1]);
+            var field2 = new Field(record.RecordNumber, header[index2], record[index2]);
+
+            return new[] { field1, field2 };
+        }
+
+        /// <summary>
+        /// 지정한 열 이름 목록의 필드값을 이용해 <see cref="Field"/> 배열을 생성한다.
+        /// </summary>
+        /// <param name="columnName1">첫 번째 열 이름.</param>
+        /// <param name="columnName2">두 번째 열 이름.</param>
+        /// <param name="columnName3">세 번째 열 이름.</param>
+        /// <typeparam name="T">열 이름 형식.</typeparam>
+        /// <returns>지정한 열 이름 목록의 필드와 관련된 정보를 가지는 <see cref="Field"/> 배열.</returns>
+        /// <exception cref="ArgumentException">레코드에서 <paramref name="columnName1"/>으로 필드를 찾을 수 없는 경우.</exception>
+        /// <exception cref="ArgumentException">레코드에서 <paramref name="columnName2"/>으로 필드를 찾을 수 없는 경우.</exception>
+        /// <exception cref="ArgumentException">레코드에서 <paramref name="columnName3"/>으로 필드를 찾을 수 없는 경우.</exception>
+        public static Field[] Parse<T>(this ICsvRecord<T> record, T columnName1, T columnName2, T columnName3)
+        {
+            var header = record.Header;
+            var index1 = header.GetIndex(columnName1);
+
+            if (index1 == -1)
+            {
+                throw new ArgumentException("유효한 열 이름이 아닙니다.", "columnName1");
+            }
+
+            var index2 = header.GetIndex(columnName2);
+
+            if (index2 == -1)
+            {
+                throw new ArgumentException("유효한 열 이름이 아닙니다.", "columnName2");
+            }
+
+            var index3 = header.GetIndex(columnName3);
+
+            if (index3 == -1)
+            {
+                throw new ArgumentException("유효한 열 이름이 아닙니다.", "columnName3");
+            }
+
+            var field1 = new Field(record.RecordNumber, header[index1], record[index1]);
+            var field2 = new Field(record.RecordNumber, header[index2], record[index2]);
+            var field3 = new Field(record.RecordNumber, header[index3], record[index3]);
+
+            return new[] { field1, field2, field3 };
+        }
+
+        /// <summary>
+        /// 지정한 열 이름 목록의 필드값을 이용해 <see cref="Field"/> 배열을 생성한다.
+        /// </summary>
+        /// <param name="columnName1">첫 번째 열 이름.</param>
+        /// <param name="columnName2">두 번째 열 이름.</param>
+        /// <param name="columnName3">세 번째 열 이름.</param>
+        /// <param name="columnName4">네 번째 열 이름.</param>
+        /// <typeparam name="T">열 이름 형식.</typeparam>
+        /// <returns>지정한 열 이름 목록의 필드와 관련된 정보를 가지는 <see cref="Field"/> 배열.</returns>
+        /// <exception cref="ArgumentException">레코드에서 <paramref name="columnName1"/>으로 필드를 찾을 수 없는 경우.</exception>
+        /// <exception cref="ArgumentException">레코드에서 <paramref name="columnName2"/>으로 필드를 찾을 수 없는 경우.</exception>
+        /// <exception cref="ArgumentException">레코드에서 <paramref name="columnName3"/>으로 필드를 찾을 수 없는 경우.</exception>
+        /// <exception cref="ArgumentException">레코드에서 <paramref name="columnName4"/>으로 필드를 찾을 수 없는 경우.</exception>
+        public static Field[] Parse<T>(this ICsvRecord<T> record, T columnName1, T columnName2, T columnName3, T columnName4)
+        {
+            var header = record.Header;
+            var index1 = header.GetIndex(columnName1);
+
+            if (index1 == -1)
+            {
+                throw new ArgumentException("유효한 열 이름이 아닙니다.", "columnName1");
+            }
+
+            var index2 = header.GetIndex(columnName2);
+
+            if (index2 == -1)
+            {
+                throw new ArgumentException("유효한 열 이름이 아닙니다.", "columnName2");
+            }
+
+            var index3 = header.GetIndex(columnName3);
+
+            if (index3 == -1)
+            {
+                throw new ArgumentException("유효한 열 이름이 아닙니다.", "columnName3");
+            }
+
+            var index4 = header.GetIndex(columnName4);
+
+            if (index4 == -1)
+            {
+                throw new ArgumentException("유효한 열 이름이 아닙니다.", "columnName4");
+            }
+
+            var field1 = new Field(record.RecordNumber, header[index1], record[index1]);
+            var field2 = new Field(record.RecordNumber, header[index2], record[index2]);
+            var field3 = new Field(record.RecordNumber, header[index3], record[index3]);
+            var field4 = new Field(record.RecordNumber, header[index4], record[index4]);
+
+            return new[] { field1, field2, field3, field4 };
+        }
+
+        /// <summary>
+        /// 지정한 열 이름 목록의 필드값을 이용해 <see cref="Field"/> 배열을 생성한다.
+        /// </summary>
+        /// <param name="columnNames">열 이름 목록.</param>
+        /// <typeparam name="T">열 이름 형식.</typeparam>
+        /// <returns>지정한 열 이름 목록의 필드와 관련된 정보를 가지는 <see cref="Field"/> 배열.</returns>
+        /// <exception cref="ArgumentException">레코드에서 <paramref name="columnNames"/>의 요소로 필드를 찾을 수 없는 경우.</exception>
+        public static Field[] Parse<T>(this ICsvRecord<T> record, params T[] columnNames)
+        {
+            var header = record.Header;
+            var fields = new Field[columnNames.Length];
+
+            for (int i = 0; i < columnNames.Length; ++i)
+            {
+                var index = header.GetIndex(columnNames[i]);
+
+                if (index == -1)
+                {
+                    throw new ArgumentException("유효한 열 이름이 아닌 요소를 포함하고 있습니다.", "columnNames");
+                }
+
+                fields[i] = new Field(record.RecordNumber, header[index], record[index]);
+            }
+
+            return fields;
         }
 
         /// <summary>
