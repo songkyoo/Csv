@@ -1,11 +1,13 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Linq;
 using System.Text.RegularExpressions;
+using UnityEngine;
 
 namespace Macaron.Csv
 {
-    public static class ICsvRecordExtensionMethod
+    public static partial class ICsvRecordExtensionMethod
     {
         /// <summary>
         /// 필드와 관련된 정보를 가지는 구조체.
@@ -818,6 +820,219 @@ namespace Macaron.Csv
             return As<Uri, UriConverter>(field, converter);
         }
 
+        /// <summary>
+        /// 요소의 수가 두 개인 필드값 목록을 <see cref="Vector2?"/> 형식으로 변환하고 값이 없는 경우 <c>null</c>을 반환한다.
+        /// </summary>
+        /// <param name="provider">필드값의 서식에 대한 문화권 특성을 지정한다. <c>null</c>인 경우 현재 스레드에 설정된 문화권 정보를 사용한다.</param>
+        /// <returns>필드값 목록이 비어있거나 모든 필드값이 없다면 <c>null</c>, 그렇지 않다면 <see cref="Vector2?"/> 형식으로 변환한 값을 반환한다.</returns>
+        /// <exception cref="CsvReaderException">요소의 수가 올바르지 않은 경우.</exception>
+        /// <exception cref="CsvReaderException">필드값을 변환할 수 없는 경우.</exception>
+        /// <remarks>
+        /// 필드값 목록의 요소중 일부만 없다면 해당 요소는 0으로 치환된다.
+        /// </remarks>
+        public static Vector2? AsVector2(this Field[] fields, IFormatProvider provider = null)
+        {
+            if (fields.Length == 0)
+            {
+                return null;
+            }
+
+            if (fields.Length != 2)
+            {
+                throw new CsvReaderException(
+                    "필드값 목록의 요소 수가 올바르지 않습니다.",
+                    null,
+                    fields[0].RecordNumber,
+                    GetUniqueColumnNames(fields));
+            }
+
+            float? x = fields[0].AsSingle(provider: provider);
+            float? y = fields[1].AsSingle(provider: provider);
+
+            if (x == null && y == null)
+            {
+                return null;
+            }
+
+            return new Vector2(x ?? 0.0f, y ?? 0.0f);
+        }
+
+        /// <summary>
+        /// 요소의 수가 세 개인 필드값 목록을 <see cref="Vector3?"/> 형식으로 변환하고 값이 없는 경우 <c>null</c>을 반환한다.
+        /// </summary>
+        /// <param name="provider">필드값의 서식에 대한 문화권 특성을 지정한다. <c>null</c>인 경우 현재 스레드에 설정된 문화권 정보를 사용한다.</param>
+        /// <returns>필드값 목록이 비어있거나 모든 필드값이 없다면 <c>null</c>, 그렇지 않다면 <see cref="Vector3?"/> 형식으로 변환한 값을 반환한다.</returns>
+        /// <exception cref="CsvReaderException">요소의 수가 올바르지 않은 경우.</exception>
+        /// <exception cref="CsvReaderException">필드값을 변환할 수 없는 경우.</exception>
+        /// <remarks>
+        /// 필드값 목록의 요소중 일부만 없다면 해당 요소는 0으로 치환된다.
+        /// </remarks>
+        public static Vector3? AsVector3(this Field[] fields, IFormatProvider provider = null)
+        {
+            if (fields.Length == 0)
+            {
+                return null;
+            }
+
+            if (fields.Length != 3)
+            {
+                throw new CsvReaderException(
+                    "필드값 목록의 요소 수가 올바르지 않습니다.",
+                    null,
+                    fields[0].RecordNumber,
+                    GetUniqueColumnNames(fields));
+            }
+
+            float? x = fields[0].AsSingle(provider: provider);
+            float? y = fields[1].AsSingle(provider: provider);
+            float? z = fields[2].AsSingle(provider: provider);
+
+            if (x == null && y == null && z == null)
+            {
+                return null;
+            }
+
+            return new Vector3(x ?? 0.0f, y ?? 0.0f, z ?? 0.0f);
+        }
+
+        /// <summary>
+        /// 16진수 색상 코드값을 <see cref="Color32?"/> 형식으로 변환하고 값이 없는 경우 <c>null</c>을 반환한다.
+        /// </summary>
+        /// <returns>필드값이 없다면 <c>null</c>, 그렇지 않다면 <see cref="Color32?"/> 형식으로 변환한 값을 반환한다.</returns>
+        /// <exception cref="CsvReaderException">필드값을 변환할 수 없는 경우.</exception>
+        public static Color32? AsColor32(this Field field)
+        {
+            if (string.IsNullOrEmpty(field.Value))
+            {
+                return null;
+            }
+
+            var converter = new NullableColor32Converter();
+            return As<Color32?, NullableColor32Converter>(field, converter);
+        }
+
+        /// <summary>
+        /// 요소의 수가 세 개 또는 네 개인 필드값 목록을 <see cref="Color32?"/> 형식으로 변환하고 값이 없는 경우 <c>null</c>을 반환한다.
+        /// </summary>
+        /// <param name="provider">필드값의 서식에 대한 문화권 특성을 지정한다. <c>null</c>인 경우 현재 스레드에 설정된 문화권 정보를 사용한다.</param>
+        /// <returns>필드값 목록이 비어있거나 모든 필드값이 없다면 <c>null</c>, 그렇지 않다면 <see cref="Color32?"/> 형식으로 변환한 값을 반환한다.</returns>
+        /// <exception cref="CsvReaderException">요소의 수가 올바르지 않은 경우.</exception>
+        /// <exception cref="CsvReaderException">필드값을 변환할 수 없는 경우.</exception>
+        /// <remarks>
+        /// 필드값 목록의 요소중 일부만 없다면 해당 요소는 0으로 치환된다.
+        /// </remarks>
+        public static Color32? AsColor32(this Field[] fields, IFormatProvider provider = null)
+        {
+            if (fields.Length == 0)
+            {
+                return null;
+            }
+
+            if (fields.Length != 3 && fields.Length != 4)
+            {
+                throw new CsvReaderException(
+                    "필드값 목록의 요소 수가 올바르지 않습니다.",
+                    null,
+                    fields[0].RecordNumber,
+                    GetUniqueColumnNames(fields));
+            }
+
+            byte? r = fields[0].AsByte(provider: provider);
+            byte? g = fields[1].AsByte(provider: provider);
+            byte? b = fields[2].AsByte(provider: provider);
+            byte? a = null;
+
+            if (fields.Length == 3)
+            {
+                if (r == null && g == null && b == null)
+                {
+                    return null;
+                }
+
+                a = 255;
+            }
+            else if (fields.Length == 4)
+            {
+                a = fields[3].AsByte(provider: provider);
+
+                if (r == null && g == null && b == null && a == null)
+                {
+                    return null;
+                }
+            }
+
+            return new Color32(r ?? 0, g ?? 0, b ?? 0, a ?? 0);
+        }
+
+        /// <summary>
+        /// 16진수 색상 코드값을 <see cref="Color?"/> 형식으로 변환하고 값이 없는 경우 <c>null</c>을 반환한다.
+        /// </summary>
+        /// <returns>필드값이 없다면 <c>null</c>, 그렇지 않다면 <see cref="Color?"/> 형식으로 변환한 값을 반환한다.</returns>
+        /// <exception cref="CsvReaderException">필드값을 변환할 수 없는 경우.</exception>
+        public static Color? AsColor(this Field field)
+        {
+            if (string.IsNullOrEmpty(field.Value))
+            {
+                return null;
+            }
+
+            var converter = new NullableColorConverter();
+            return As<Color?, NullableColorConverter>(field, converter);
+        }
+
+        /// <summary>
+        /// 요소의 수가 세 개 또는 네 개인 필드값 목록을 <see cref="Color?"/> 형식으로 변환하고 값이 없는 경우 <c>null</c>을 반환한다.
+        /// </summary>
+        /// <param name="provider">필드값의 서식에 대한 문화권 특성을 지정한다. <c>null</c>인 경우 현재 스레드에 설정된 문화권 정보를 사용한다.</param>
+        /// <returns>필드값 목록이 비어있거나 모든 필드값이 없다면 <c>null</c>, 그렇지 않다면 <see cref="Color?"/> 형식으로 변환한 값을 반환한다.</returns>
+        /// <exception cref="CsvReaderException">요소의 수가 올바르지 않은 경우.</exception>
+        /// <exception cref="CsvReaderException">필드값을 변환할 수 없는 경우.</exception>
+        /// <remarks>
+        /// 필드값 목록의 요소중 일부만 없다면 해당 요소는 0으로 치환된다.
+        /// </remarks>
+        public static Color? AsColor(this Field[] fields, IFormatProvider provider = null)
+        {
+            if (fields.Length == 0)
+            {
+                return null;
+            }
+
+            if (fields.Length != 3 && fields.Length != 4)
+            {
+                throw new CsvReaderException(
+                    "필드값 목록의 요소 수가 올바르지 않습니다.",
+                    null,
+                    fields[0].RecordNumber,
+                    GetUniqueColumnNames(fields));
+            }
+
+            float? r = fields[0].AsSingle(provider: provider);
+            float? g = fields[1].AsSingle(provider: provider);
+            float? b = fields[2].AsSingle(provider: provider);
+            float? a = null;
+
+            if (fields.Length == 3)
+            {
+                if (r == null && g == null && b == null)
+                {
+                    return null;
+                }
+
+                a = 1.0f;
+            }
+            else if (fields.Length == 4)
+            {
+                a = fields[3].AsSingle(provider: provider);
+
+                if (r == null && g == null && b == null && a == null)
+                {
+                    return null;
+                }
+            }
+
+            return new Color(r ?? 0.0f, g ?? 0.0f, b ?? 0.0f, a ?? 0.0f);
+        }
+
         private interface IConverter<T>
         {
             T Convert(string value);
@@ -1212,6 +1427,38 @@ namespace Macaron.Csv
                 return new Uri(value, _uriKind);
             }
         }
+
+        private struct NullableColor32Converter : IConverter<Color32?>
+        {
+            public Color32? Convert(string value)
+            {
+                if (value[0] != '#')
+                {
+                    throw new FormatException();
+                }
+
+                byte r, g, b, a;
+                ColorHelper.GetBytes(value, out r, out g, out b, out a);
+
+                return new Color32(r, g, b, a);
+            }
+        }
+
+        private struct NullableColorConverter : IConverter<Color?>
+        {
+            public Color? Convert(string value)
+            {
+                if (value[0] != '#')
+                {
+                    throw new FormatException();
+                }
+
+                byte r, g, b, a;
+                ColorHelper.GetBytes(value, out r, out g, out b, out a);
+
+                return new Color(r / 255.0f, g / 255.0f, b / 255.0f, a / 255.0f);
+            }
+        }
         #endregion
 
         private static TValue As<TValue, TConverter>(Field field, TConverter converter)
@@ -1234,6 +1481,18 @@ namespace Macaron.Csv
                     field.RecordNumber,
                     field.ColumnName);
             }
+        }
+
+        private static string GetUniqueColumnNames(Field[] fields)
+        {
+            var hashSet = new HashSet<string>();
+            var uniqueColumnNames = fields
+                .Select(f => f.ColumnName)
+                .Where(cn => !string.IsNullOrEmpty(cn) && hashSet.Add(cn))
+                .ToArray();
+
+            return string.Join(",", uniqueColumnNames);
+
         }
     }
 }

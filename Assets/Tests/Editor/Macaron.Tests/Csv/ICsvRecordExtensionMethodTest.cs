@@ -1,6 +1,7 @@
 using System;
 using System.Globalization;
 using System.Text.RegularExpressions;
+using UnityEngine;
 using NUnit.Framework;
 using Macaron.Csv;
 using Macaron.Csv.Internal;
@@ -1109,6 +1110,298 @@ namespace Macaron.Tests.Csv
             var field2 = new ICsvRecordExtensionMethod.Field(1, "A", "PSG1");
 
             Assert.That(result, EqualTo(new [] { field0, field1, field2 }));
+        }
+
+        [Test]
+        public void AsVector2_FieldValuesIsValid_ReturnsParsedValue()
+        {
+            var columnNames = new[] { "PositionX", "PositionY" };
+            var fields = new[] { "1", "-1" };
+            var record = CreateRecord(columnNames, 1, fields);
+
+            var result = record.Parse("PositionX", "PositionY").AsVector2();
+
+            Assert.That(result, EqualTo(new Vector2(1, -1)));
+        }
+
+        [Test]
+        public void AsVector2_FieldsIsEmpty_ReturnsNull()
+        {
+            var columnNames = new[] { "Position" };
+            var fields = new[] { "" };
+            var record = CreateRecord(columnNames, 1, fields);
+
+            var result = record.Parse("Position").Split(',').AsVector2();
+
+            Assert.That(result, Null);
+        }
+
+        [Test]
+        public void AsVector2_AllFieldValuesIsNull_ReturnsNull()
+        {
+            var columnNames = new[] { "PositionX", "PositionY" };
+            var fields = new[] { "", "" };
+            var record = CreateRecord(columnNames, 1, fields);
+
+            var result = record.Parse("PositionX", "PositionY").AsVector2();
+
+            Assert.That(result, Null);
+        }
+
+        [Test]
+        public void AsVector2_SomeFieldValuesIsNull_ReplacesNullWithZero()
+        {
+            var columnNames = new[] { "PositionX", "PositionY" };
+            var fields = new[] { "1", "" };
+            var record = CreateRecord(columnNames, 1, fields);
+
+            var result = record.Parse("PositionX", "PositionY").AsVector2();
+
+            Assert.That(result, EqualTo(new Vector2(1, 0)));
+        }
+
+        [Test]
+        public void AsVector2_FieldCountNotMatched_ThrowsException()
+        {
+            var columnNames = new[] { "PositionX", "PositionY", "PositionZ" };
+            var fields = new[] { "1", "-1", "0" };
+            var record = CreateRecord(columnNames, 1, fields);
+
+            Assert.Throws(
+                TypeOf<CsvReaderException>().And.Property("ColumnName").EqualTo("PositionX,PositionY,PositionZ"),
+                () => record.Parse("PositionX", "PositionY", "PositionZ").AsVector2());
+        }
+
+        [Test]
+        public void AsVector3_FieldValuesIsValid_ReturnsParsedValue()
+        {
+            var columnNames = new[] { "PositionX", "PositionY", "PositionZ" };
+            var fields = new[] { "1", "-1", "2" };
+            var record = CreateRecord(columnNames, 1, fields);
+
+            var result = record.Parse("PositionX", "PositionY", "PositionZ").AsVector3();
+
+            Assert.That(result, EqualTo(new Vector3(1, -1, 2)));
+        }
+
+        [Test]
+        public void AsVector3_FieldsIsEmpty_ReturnsNull()
+        {
+            var columnNames = new[] { "Position" };
+            var fields = new[] { "" };
+            var record = CreateRecord(columnNames, 1, fields);
+
+            var result = record.Parse("Position").Split(',').AsVector3();
+
+            Assert.That(result, Null);
+        }
+
+        [Test]
+        public void AsVector3_AllFieldValuesIsNull_ReturnsNull()
+        {
+            var columnNames = new[] { "PositionX", "PositionY", "PositionZ" };
+            var fields = new[] { "", "", "" };
+            var record = CreateRecord(columnNames, 1, fields);
+
+            var result = record.Parse("PositionX", "PositionY", "PositionZ").AsVector3();
+
+            Assert.That(result, Null);
+        }
+
+        [Test]
+        public void AsVector3_SomeFieldValuesIsNull_ReplacesNullWithZero()
+        {
+            var columnNames = new[] { "Position" };
+            var fields = new[] { "1,,2" };
+            var record = CreateRecord(columnNames, 1, fields);
+
+            var result = record.Parse("Position").Split(',').AsVector3();
+
+            Assert.That(result, EqualTo(new Vector3(1, 0, 2)));
+        }
+
+        [Test]
+        public void AsVector3_FieldCountNotMatched_ThrowsException()
+        {
+            var columnNames = new[] { "Position" };
+            var fields = new[] { "1,-1" };
+            var record = CreateRecord(columnNames, 1, fields);
+
+            Assert.Throws(
+                TypeOf<CsvReaderException>().And.Property("ColumnName").EqualTo("Position"),
+                () => record.Parse("Position").Split(',').AsVector3());
+        }
+
+        [TestCase("#ff8c00ff", new byte[] { 255, 140, 0, 255 })]
+        [TestCase("#ff8c00", new byte[] { 255, 140, 0, 255 })]
+        [TestCase("#f80f", new byte[] { 255, 136, 0, 255 })]
+        [TestCase("#f80", new byte[] { 255, 136, 0, 255 })]
+        public void AsColor32_FieldValueIsValid_ReturnsParsedValue(string value, byte[] expectedResult)
+        {
+            var columnNames = new[] { "Color" };
+            var fields = new[] { value };
+            var record = CreateRecord(columnNames, 1, fields);
+            var result = record.Parse("Color").AsColor32();
+
+            Assert.That(
+                result,
+                EqualTo(new Color32(expectedResult[0], expectedResult[1], expectedResult[2], expectedResult[3])));
+        }
+
+        [Test]
+        public void AsColor32_FieldValueIsInvalid_ThrowsException()
+        {
+            var columnNames = new[] { "Color" };
+            var fields = new[] { "NotColor32" };
+            var record = CreateRecord(columnNames, 1, fields);
+
+            Assert.Throws(
+                TypeOf<CsvReaderException>().And.Property("ColumnName").EqualTo("Color"),
+                () => record.Parse("Color").AsColor32());
+        }
+
+        [TestCase(new[] { "R", "G", "B", "A" }, new[] { "255", "140", "0", "255" })]
+        [TestCase(new[] { "R", "G", "B" }, new[] { "255", "140", "0" })]
+        public void AsColor32_FieldValuesIsValid_ReturnsParsedValue(string[] columnNames, string[] fields)
+        {
+            var record = CreateRecord(columnNames, 1, fields);
+            var result = record.Parse(columnNames).AsColor32();
+
+            Assert.That(result, EqualTo(new Color32(255, 140, 0, 255)));
+        }
+
+        [Test]
+        public void AsColor32_FieldsIsEmpty_ReturnsNull()
+        {
+            var columnNames = new[] { "Color" };
+            var fields = new[] { "" };
+            var record = CreateRecord(columnNames, 1, fields);
+
+            var result = record.Parse("Color").Split(',').AsColor32();
+
+            Assert.That(result, Null);
+        }
+
+        [Test]
+        public void AsColor32_AllFieldValuesIsNull_ReturnsNull()
+        {
+            var columnNames = new[] { "R", "G", "B", "A" };
+            var fields = new[] { "", "", "", "" };
+            var record = CreateRecord(columnNames, 1, fields);
+
+            var result = record.Parse("R", "G", "B", "A").AsColor32();
+
+            Assert.That(result, Null);
+        }
+
+        [Test]
+        public void AsColor32_SomeFieldValuesIsNull_ReplacesNullWithZero()
+        {
+            var columnNames = new[] { "R", "G", "B", "A" };
+            var fields = new[] { "255", "", "255", "" };
+            var record = CreateRecord(columnNames, 1, fields);
+
+            var result = record.Parse("R", "G", "B", "A").AsColor32();
+
+            Assert.That(result, EqualTo(new Color32(255, 0, 255, 0)));
+        }
+
+        [Test]
+        public void AsColor32_FieldCountNotMatched_ThrowsException()
+        {
+            var columnNames = new[] { "R", "G", "B" };
+            var fields = new[] { "255", "255", "255" };
+            var record = CreateRecord(columnNames, 1, fields);
+
+            Assert.Throws(
+                TypeOf<CsvReaderException>().And.Property("ColumnName").EqualTo("R,G"),
+                () => record.Parse("R", "G").AsColor32());
+        }
+
+        [TestCase("#ff8c00ff", new byte[] { 255, 140, 0, 255 })]
+        [TestCase("#ff8c00", new byte[] { 255, 140, 0, 255 })]
+        [TestCase("#f80f", new byte[] { 255, 136, 0, 255 })]
+        [TestCase("#f80", new byte[] { 255, 136, 0, 255 })]
+        public void AsColor_FieldValueIsValid_ReturnsParsedValue(string value, byte[] expectedResult)
+        {
+            var columnNames = new[] { "Color" };
+            var fields = new[] { value };
+            var record = CreateRecord(columnNames, 1, fields);
+            var result = record.Parse("Color").AsColor();
+
+            Assert.That(
+                result,
+                EqualTo(new Color(expectedResult[0] / 255.0f, expectedResult[1] / 255.0f, expectedResult[2] / 255.0f, expectedResult[3] / 255.0f)));
+        }
+
+        [Test]
+        public void AsColor_FieldValueIsInvalid_ThrowsException()
+        {
+            var columnNames = new[] { "Color" };
+            var fields = new[] { "NotColor32" };
+            var record = CreateRecord(columnNames, 1, fields);
+
+            Assert.Throws(
+                TypeOf<CsvReaderException>().And.Property("ColumnName").EqualTo("Color"),
+                () => record.Parse("Color").AsColor());
+        }
+
+        [TestCase(new[] { "R", "G", "B", "A" }, new[] { "1", "0.56", "0", "1" })]
+        [TestCase(new[] { "R", "G", "B" }, new[] { "1", "0.56", "0" })]
+        public void AsColor_FieldValuesIsValid_ReturnsParsedValue(string[] columnNames, string[] fields)
+        {
+            var record = CreateRecord(columnNames, 1, fields);
+            var result = record.Parse(columnNames).AsColor();
+
+            Assert.That(result, EqualTo(new Color(1, 0.56f, 0, 1)));
+        }
+
+        [Test]
+        public void AsColor_FieldsIsEmpty_ReturnsNull()
+        {
+            var columnNames = new[] { "Color" };
+            var fields = new[] { "" };
+            var record = CreateRecord(columnNames, 1, fields);
+
+            var result = record.Parse("Color").Split(',').AsColor();
+
+            Assert.That(result, Null);
+        }
+
+        [Test]
+        public void AsColor_AllFieldValuesIsNull_ReturnsNull()
+        {
+            var columnNames = new[] { "R", "G", "B", "A" };
+            var fields = new[] { "", "", "", "" };
+            var record = CreateRecord(columnNames, 1, fields);
+
+            var result = record.Parse("R", "G", "B", "A").AsColor();
+
+            Assert.That(result, Null);
+        }
+
+        [Test]
+        public void AsColor_SomeFieldValuesIsNull_ReplacesNullWithZero()
+        {
+            var columnNames = new[] { "R", "G", "B", "A" };
+            var fields = new[] { "1", "", "1", "" };
+            var record = CreateRecord(columnNames, 1, fields);
+
+            var result = record.Parse("R", "G", "B", "A").AsColor();
+
+            Assert.That(result, EqualTo(new Color(1, 0, 1, 0)));
+        }
+
+        [Test]
+        public void AsColor_FieldCountNotMatched_ThrowsException()
+        {
+            var columnNames = new[] { "R", "G", "B" };
+            var fields = new[] { "255", "255", "255" };
+            var record = CreateRecord(columnNames, 1, fields);
+
+            Assert.Throws(
+                TypeOf<CsvReaderException>().And.Property("ColumnName").EqualTo("R,G"),
+                () => record.Parse("R", "G").AsColor());
         }
 
         private ICsvRecord<int> CreateRecord(int recordNumber, string[] fields)
