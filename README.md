@@ -4,11 +4,12 @@ CSV 데이터를 분석하여 레코드 단위의 문자열 목록으로 변환�
 
 ## 시작하기
 
-### 문자열로 부터 읽기
+### 문자열로부터 읽기
 
-`CsvReader.Create` 메서드를 사용하여 `ICsvReader<T>` 개체를 생성합니다.
+`CsvReader.Create` 메서드를 사용하여 `ICsvReader<int>` 개체를 생성하고 `Read` 메서드를 호출하여 레코드 단위로 열거할 수 있습니다.
 
 ```csharp
+using UnityEngine;
 using Macaron.Csv;
 
 var str =
@@ -36,7 +37,13 @@ using (var reader = CsvReader.Create(str, CsvReaderSettings.Default))
 
 ### `Stream`이나 `TextReader`로부터 읽기
 
+문자열이 아닌 스트림으로부터 `ICsvReader<int>` 개체를 생성할 수 있습니다.
+
 ```csharp
+using System.IO;
+using System.Linq;
+using System.Text;
+using UnityEngine;
 using Macaron.Csv;
 
 var str =
@@ -63,9 +70,10 @@ using (var reader = CsvReader.Create(stream, CsvReaderSettings.Default))
 
 ### 헤더를 사용하여 레코드의 특정 필드에 접근
 
-헤더 정보가 있다면 인덱스가 아닌 문자열을 사용하여 특정 열의 필드에 접근할 수 있습니다.
+`ICsvHeaderPolicy<string>`을 구현한 개체를 제공하여 헤더를 생성하는 방식을 지정하면 인덱스가 아닌 문자열을 사용하여 특정 열의 필드에 접근할 수 있습니다.
 
 ```csharp
+using UnityEngine;
 using Macaron.Csv;
 
 var str =
@@ -127,9 +135,11 @@ settings.FieldSeparator = '\t'; // 기존값에 영향을 주지 않습니다.
 
 ### `ICsvRecord<T>.Parse` 확장 메서드
 
-`ICsvReader<T>.Record` 속성의 형식인 `ICsvRecord<T>`는 필드값을 변환하는 일반적인 방법으로 `Parse` 확장 메서드를 가지고 있습니다.
+`ICsvReader<T>.Record` 속성의 형식인 `ICsvRecord<T>`는 필드값을 변환하는 일반적인 방법으로 `Parse` 확장 메서드를 가지고 있습니다. `Parse` 호출 후 이어지는 메서드 호출을 통해 값을 변환할 수 있습니다.
 
 ```csharp
+using System;
+using UnityEngine;
 using Macaron.Csv;
 
 [Flags]
@@ -175,6 +185,113 @@ using (var reader = CsvReader.Create(str, CsvReaderSettings.Default, headerPolic
 // No: 2, Name: WA 2000, Mass: 6.95kg, Action: GasOperated, RotatingBolt
 ```
 
-기본적으로 다음 형식에 대해 변환을 제공합니다.
+`Boolean`, `Byte`, `Char`, `Decimal`, `Double`, `Int16`, `Int32`, `Int64`, `SByte`, `Single`, `UInt16`, `UInt32`, `UInt64`, `Enum`, `DateTime`, `TimeSpan`, `DateTimeOffset`, `Guid`, `String`, `Uri`와 유니티의 `Color`, `Color32` 형식에 대한 변환 메서드가 정의되어 있습니다.
 
-`Boolean`, `Byte`, `Char`, `Decimal`, `Double`, `Int16`, `Int32`, `Int64`, `SByte`, `Single`, `UInt16`, `UInt32`, `UInt64`, `Enum`, `DateTime`, `TimeSpan`, `DateTimeOffset`, `Guid`, `String`, `Uri`
+#### 단일 필드를 분할하여 필드 배열을 생성
+
+`Parse` 메서드를 호출한 후, 변환 메서드가 아닌 `Split` 메서드를 호출하여 필드값을 지정한 구분자로 분할한 필드 배열을 생성할 수 있습니다.
+
+```csharp
+using System;
+using System.Linq;
+using UnityEngine;
+using Macaron.Csv;
+
+var str =
+    "Name,Cartridge\r\n" +
+    "AWP,\"7.62x51mm NATO,.308 Winchester,.243 Winchester\"\r\n" +
+    "WA 2000,\"7.62x51mm NATO,.300 Winchester Magnum,7.5x55mm Swiss\"\r\n";
+var headerPolicy = CsvHeaderPolicies.FirstRecord();
+
+using (var reader = CsvReader.Create(str, CsvReaderSettings.Default, headerPolicy))
+{
+    Func<ICsvRecordExtensionMethod.Field, string> enclose = f => '"' + f.Value + '"';
+
+    while (reader.Read())
+    {
+        var record = reader.Record;
+        var name = record.Get("Name");
+
+        // 구분자는 문자, 문자열, 정규표현식을 사용할 수 있습니다.
+        var cartridges = record.Parse("Cartridge").Split(',').Select(enclose).ToArray();
+
+        Debug.LogFormat("{0}: {1}", name, string.Join(", ", cartridges));
+    }
+}
+
+// 결과
+// AWP: "7.62x51mm NATO", ".308 Winchester", ".243 Winchester"
+// WA 2000: "7.62x51mm NATO", ".300 Winchester Magnum", "7.5x55mm Swiss"
+```
+
+#### 여러 필드를 합쳐 필드 배열을 생성
+
+여러 개의 열 이름을 인자로 받는 `Parse` 메서드를 호출하여 여러 필드를 합쳐서 필드 배열을 작성할 수 있습니다.
+
+```csharp
+using System;
+using System.Linq;
+using UnityEngine;
+using Macaron.Csv;
+
+var str =
+    "Name,Cartridge1,Cartridge2,Cartridge3\r\n" +
+    "AWP,7.62x51mm NATO,.308 Winchester,.243 Winchester\r\n" +
+    "PSG1,7.62x51mm NATO,,\r\n";
+var headerPolicy = CsvHeaderPolicies.FirstRecord();
+
+using (var reader = CsvReader.Create(str, CsvReaderSettings.Default, headerPolicy))
+{
+    Func<ICsvRecordExtensionMethod.Field, bool> hasValue = f => !string.IsNullOrEmpty(f.Value);
+    Func<ICsvRecordExtensionMethod.Field, string> enclose = f => '"' + f.Value + '"';
+
+    while (reader.Read())
+    {
+        var record = reader.Record;
+        var name = record.Get("Name");
+        var cartridges = record
+            .Parse("Cartridge1", "Cartridge2", "Cartridge3")
+            .Where(hasValue)
+            .Select(enclose)
+            .ToArray();
+
+        Debug.LogFormat("{0}: {1}", name, string.Join(", ", cartridges));
+    }
+}
+
+// 결과
+// AWP: "7.62x51mm NATO", ".308 Winchester", ".243 Winchester"
+// PSG1: "7.62x51mm NATO"
+```
+
+#### 필드 배열에 사용할 수 있는 변환 메서드
+
+개체를 생성하는데 여러 필드의 값이 필요한 형식에 사용할 수 있는 변환 메서드가 있습니다. 유니티 `Vector2`, `Vector3`, `Color`, `Color32` 형식에 대한 변환 메서드가 정의되어 있습니다.
+
+예를 들어 `Vector2` 형식은 다음과 같이 변환할 수 있습니다.
+
+```csharp
+using UnityEngine;
+using Macaron.Csv;
+
+var str =
+    "PositionX,PositionY\r\n" +
+    "1,-1\r\n" +
+    "-1,1\r\n";
+var headerPolicy = CsvHeaderPolicies.FirstRecord();
+
+using (var reader = CsvReader.Create(str, CsvReaderSettings.Default, headerPolicy))
+{
+    while (reader.Read())
+    {
+        var record = reader.Record;
+        var position = record.Parse("PositionX", "PositionY").AsVector2();
+
+        Debug.Log("Position: " + position);
+    }
+}
+
+// 결과
+// Position: (1.0, -1.0)
+// Position: (-1.0, 1.0)
+```
