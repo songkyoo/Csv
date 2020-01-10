@@ -1,5 +1,3 @@
-using System;
-
 namespace Macaron.Csv
 {
     partial struct CsvReaderSettings
